@@ -81,6 +81,8 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3")
     implementation(libs.firebase.firestore)
+    implementation("androidx.compose.material:material-icons-extended")
+
 
     // Keep existing test dependencies
     testImplementation(libs.junit)
