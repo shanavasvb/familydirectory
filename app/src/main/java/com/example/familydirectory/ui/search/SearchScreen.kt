@@ -1,6 +1,5 @@
-package com.example.familydirectory.ui.search
-
 // SearchScreen.kt
+package com.example.familydirectory.ui.search
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -104,9 +103,17 @@ fun SearchScreen(
                     }
 
                     searchQuery.isBlank() && !hasActiveFilters -> {
-                        InitialSearchState(
-                            modifier = Modifier.align(Alignment.Center)
-                        )
+                        // Show recent searches if available
+                        Column(
+                            modifier = Modifier.fillMaxSize()
+                        ) {
+                            // Recent searches would go here
+                            // RecentSearchesSection(...)
+
+                            InitialSearchState(
+                                modifier = Modifier.align(Alignment.CenterHorizontally)
+                            )
+                        }
                     }
 
                     searchResults.isEmpty() && (searchQuery.isNotBlank() || hasActiveFilters) -> {

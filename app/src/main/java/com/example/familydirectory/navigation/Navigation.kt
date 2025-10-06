@@ -1,8 +1,7 @@
 package com.example.familydirectory.navigation
 
-// Navigation.kt
-
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -11,6 +10,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.familydirectory.ui.detail.FamilyDetailScreen
 import com.example.familydirectory.ui.events.EventsScreen
+import com.example.familydirectory.ui.quotes.QuotesScreen
 import com.example.familydirectory.ui.search.SearchScreen
 import com.example.familydirectory.ui.upload.UploadEventScreen
 
@@ -28,16 +28,17 @@ sealed class Screen(val route: String) {
 @Composable
 fun AppNavigation(
     navController: NavHostController = rememberNavController(),
-    startDestination: String = Screen.Quotes.route
+    startDestination: String = Screen.Quotes.route,
+    modifier: Modifier = Modifier
 ) {
     NavHost(
         navController = navController,
-        startDestination = startDestination
+        startDestination = startDestination,
+        modifier = modifier
     ) {
         // Quotes Screen (Home)
         composable(Screen.Quotes.route) {
-            // QuotesScreen will be created later
-            // QuotesScreen()
+            QuotesScreen() // ✅ Now implemented
         }
 
         // Search Screen
