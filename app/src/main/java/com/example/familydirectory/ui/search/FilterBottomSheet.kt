@@ -1,19 +1,22 @@
 package com.example.familydirectory.ui.search
 
-// FilterBottomSheet.kt
-
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.familydirectory.data.model.FilterOptions
 import com.example.familydirectory.data.model.SearchFilters
+import com.example.familydirectory.ui.theme.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -34,12 +37,14 @@ fun FilterBottomSheet(
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
-        sheetState = sheetState
+        sheetState = sheetState,
+        containerColor = BackgroundWhite,
+        shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(24.dp)
         ) {
             // Header
             Row(
@@ -47,17 +52,42 @@ fun FilterBottomSheet(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = "Filter Families",
-                    style = MaterialTheme.typography.titleLarge
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Surface(
+                        shape = CircleShape,
+                        color = SurfaceBlueLight,
+                        modifier = Modifier.size(44.dp)
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Icon(
+                                Icons.Default.FilterAlt,
+                                contentDescription = null,
+                                modifier = Modifier.size(24.dp),
+                                tint = PrimaryBlue
+                            )
+                        }
+                    }
+                    Text(
+                        text = "Filter Families",
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = PrimaryBlue
+                    )
+                }
 
                 IconButton(onClick = onDismiss) {
-                    Icon(Icons.Default.Close, "Close")
+                    Icon(
+                        Icons.Default.Close,
+                        "Close",
+                        tint = TextSecondary
+                    )
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
             // Scrollable content
             Column(
@@ -65,11 +95,12 @@ fun FilterBottomSheet(
                     .fillMaxWidth()
                     .weight(1f, fill = false)
                     .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                verticalArrangement = Arrangement.spacedBy(20.dp)
             ) {
                 // Parish Filter
                 FilterSection(
                     title = "Parish",
+                    icon = Icons.Default.Church,
                     selectedValue = selectedParish,
                     options = if (availableParishes.isNotEmpty())
                         availableParishes
@@ -78,11 +109,12 @@ fun FilterBottomSheet(
                     onValueChange = { selectedParish = it }
                 )
 
-                Divider()
+                HorizontalDivider(color = DividerLight)
 
                 // Region Filter
                 FilterSection(
                     title = "Region",
+                    icon = Icons.Default.Place,
                     selectedValue = selectedRegion,
                     options = if (availableRegions.isNotEmpty())
                         availableRegions
@@ -91,33 +123,35 @@ fun FilterBottomSheet(
                     onValueChange = { selectedRegion = it }
                 )
 
-                Divider()
+                HorizontalDivider(color = DividerLight)
 
                 // Blood Group Filter
                 FilterSection(
                     title = "Blood Group",
+                    icon = Icons.Default.Favorite,
                     selectedValue = selectedBloodGroup,
                     options = FilterOptions.bloodGroups,
                     onValueChange = { selectedBloodGroup = it }
                 )
 
-                Divider()
+                HorizontalDivider(color = DividerLight)
 
                 // Gender Filter
                 FilterSection(
                     title = "Gender",
+                    icon = Icons.Default.Person,
                     selectedValue = selectedGender,
                     options = FilterOptions.genders,
                     onValueChange = { selectedGender = it }
                 )
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
             // Action Buttons
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 OutlinedButton(
                     onClick = {
@@ -127,9 +161,20 @@ fun FilterBottomSheet(
                         selectedGender = null
                         viewModel.clearFilters()
                     },
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        contentColor = ErrorRed
+                    ),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, ErrorRed)
                 ) {
-                    Text("Clear All")
+                    Icon(
+                        Icons.Default.Clear,
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text("Clear All", fontWeight = FontWeight.Bold)
                 }
 
                 Button(
@@ -144,9 +189,20 @@ fun FilterBottomSheet(
                         )
                         onDismiss()
                     },
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = PrimaryBlue,
+                        contentColor = Color.White
+                    )
                 ) {
-                    Text("Apply Filters")
+                    Icon(
+                        Icons.Default.Check,
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text("Apply", fontWeight = FontWeight.Bold)
                 }
             }
 
@@ -159,6 +215,7 @@ fun FilterBottomSheet(
 @Composable
 fun FilterSection(
     title: String,
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
     selectedValue: String?,
     options: List<String>,
     onValueChange: (String?) -> Unit
@@ -168,11 +225,32 @@ fun FilterSection(
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {
-        Text(
-            text = title,
-            style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.padding(bottom = 12.dp)
+        ) {
+            Surface(
+                shape = CircleShape,
+                color = SurfaceBlueLight,
+                modifier = Modifier.size(32.dp)
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp),
+                        tint = PrimaryBlue
+                    )
+                }
+            }
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = TextPrimary
+            )
+        }
 
         ExposedDropdownMenuBox(
             expanded = expanded,
@@ -182,32 +260,61 @@ fun FilterSection(
                 value = selectedValue ?: "All",
                 onValueChange = {},
                 readOnly = true,
-                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                trailingIcon = {
+                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .menuAnchor(),
-                colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors()
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = PrimaryBlue,
+                    unfocusedBorderColor = BorderBlue,
+                    focusedTextColor = TextPrimary,
+                    unfocusedTextColor = TextPrimary,
+                    focusedContainerColor = Color.White,
+                    unfocusedContainerColor = Color.White
+                ),
+                shape = RoundedCornerShape(12.dp)
             )
 
             ExposedDropdownMenu(
                 expanded = expanded,
-                onDismissRequest = { expanded = false }
+                onDismissRequest = { expanded = false },
+                modifier = Modifier.background(Color.White)
             ) {
                 DropdownMenuItem(
-                    text = { Text("All") },
+                    text = {
+                        Text(
+                            "All",
+                            fontWeight = if (selectedValue == null) FontWeight.Bold else FontWeight.Normal,
+                            color = if (selectedValue == null) PrimaryBlue else TextPrimary
+                        )
+                    },
                     onClick = {
                         onValueChange(null)
                         expanded = false
-                    }
+                    },
+                    leadingIcon = if (selectedValue == null) {
+                        { Icon(Icons.Default.Check, null, tint = PrimaryBlue) }
+                    } else null
                 )
 
                 options.forEach { option ->
                     DropdownMenuItem(
-                        text = { Text(option) },
+                        text = {
+                            Text(
+                                option,
+                                fontWeight = if (selectedValue == option) FontWeight.Bold else FontWeight.Normal,
+                                color = if (selectedValue == option) PrimaryBlue else TextPrimary
+                            )
+                        },
                         onClick = {
                             onValueChange(option)
                             expanded = false
-                        }
+                        },
+                        leadingIcon = if (selectedValue == option) {
+                            { Icon(Icons.Default.Check, null, tint = PrimaryBlue) }
+                        } else null
                     )
                 }
             }

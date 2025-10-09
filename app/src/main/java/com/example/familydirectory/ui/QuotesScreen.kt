@@ -1,6 +1,5 @@
 package com.example.familydirectory.ui.quotes
 
-import androidx.compose.animation.*
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -14,9 +13,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -24,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.familydirectory.ui.theme.*
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -81,7 +80,7 @@ class QuotesViewModel : ViewModel() {
                     }
                 }
 
-                _quotes.value = quotesList.shuffled() // Randomize quotes
+                _quotes.value = quotesList.shuffled()
                 _isLoading.value = false
             } catch (e: Exception) {
                 _quotes.value = emptyList()
@@ -133,25 +132,25 @@ fun QuotesScreen(
                     Column {
                         Text(
                             "Daily Inspiration",
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White
                         )
                         Text(
                             SimpleDateFormat("EEEE, MMMM dd, yyyy", Locale.getDefault()).format(Date()),
                             style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f)
+                            color = Color.White.copy(alpha = 0.9f)
                         )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimary
+                    containerColor = PrimaryBlue
                 ),
                 actions = {
                     IconButton(onClick = { viewModel.loadQuotes() }) {
                         Icon(
                             Icons.Default.Refresh,
                             contentDescription = "Refresh",
-                            tint = MaterialTheme.colorScheme.onPrimary
+                            tint = Color.White
                         )
                     }
                 }
@@ -164,8 +163,8 @@ fun QuotesScreen(
                 .background(
                     Brush.verticalGradient(
                         colors = listOf(
-                            MaterialTheme.colorScheme.primary.copy(alpha = 0.05f),
-                            MaterialTheme.colorScheme.background
+                            SurfaceBlueLight,
+                            BackgroundWhite
                         )
                     )
                 )
@@ -178,13 +177,15 @@ fun QuotesScreen(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         CircularProgressIndicator(
-                            color = MaterialTheme.colorScheme.primary
+                            color = PrimaryBlue,
+                            strokeWidth = 3.dp
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(
                             "Loading inspiration...",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = TextSecondary,
+                            fontWeight = FontWeight.Medium
                         )
                     }
                 }
@@ -200,11 +201,38 @@ fun QuotesScreen(
                     ) {
                         // Category Filter
                         if (categories.size > 1) {
-                            CategoryFilterRow(
-                                categories = categories,
-                                selectedCategory = selectedCategory,
-                                onCategorySelected = { viewModel.selectCategory(it) }
-                            )
+                            Surface(
+                                modifier = Modifier.fillMaxWidth(),
+                                color = Color.White,
+                                shadowElevation = 2.dp
+                            ) {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 16.dp, vertical = 12.dp),
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    categories.forEach { category ->
+                                        FilterChip(
+                                            selected = category == selectedCategory,
+                                            onClick = { viewModel.selectCategory(category) },
+                                            label = {
+                                                Text(
+                                                    category.replaceFirstChar { it.uppercase() },
+                                                    fontWeight = if (category == selectedCategory)
+                                                        FontWeight.Bold else FontWeight.Normal
+                                                )
+                                            },
+                                            colors = FilterChipDefaults.filterChipColors(
+                                                selectedContainerColor = PrimaryBlue,
+                                                selectedLabelColor = Color.White,
+                                                containerColor = SurfaceBlueLight,
+                                                labelColor = PrimaryBlue
+                                            )
+                                        )
+                                    }
+                                }
+                            }
                         }
 
                         // Quote Pager
@@ -243,43 +271,6 @@ fun QuotesScreen(
 }
 
 @Composable
-fun CategoryFilterRow(
-    categories: List<String>,
-    selectedCategory: String,
-    onCategorySelected: (String) -> Unit
-) {
-    Surface(
-        modifier = Modifier.fillMaxWidth(),
-        color = MaterialTheme.colorScheme.surface,
-        shadowElevation = 2.dp
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 12.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            categories.forEach { category ->
-                FilterChip(
-                    selected = category == selectedCategory,
-                    onClick = { onCategorySelected(category) },
-                    label = {
-                        Text(
-                            category.replaceFirstChar { it.uppercase() },
-                            fontWeight = if (category == selectedCategory) FontWeight.Bold else FontWeight.Normal
-                        )
-                    },
-                    colors = FilterChipDefaults.filterChipColors(
-                        selectedContainerColor = MaterialTheme.colorScheme.primary,
-                        selectedLabelColor = MaterialTheme.colorScheme.onPrimary
-                    )
-                )
-            }
-        }
-    }
-}
-
-@Composable
 fun QuoteCard(
     quote: Quote,
     currentPage: Int,
@@ -292,13 +283,12 @@ fun QuoteCard(
         contentAlignment = Alignment.Center
     ) {
         Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .shadow(8.dp, RoundedCornerShape(24.dp)),
+            modifier = Modifier.fillMaxWidth(),
             colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surface
+                containerColor = Color.White
             ),
-            shape = RoundedCornerShape(24.dp)
+            shape = RoundedCornerShape(28.dp),
+            elevation = CardDefaults.cardElevation(8.dp)
         ) {
             Box(
                 modifier = Modifier
@@ -306,8 +296,8 @@ fun QuoteCard(
                     .background(
                         Brush.verticalGradient(
                             colors = listOf(
-                                MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f),
-                                MaterialTheme.colorScheme.surface
+                                SurfaceBlueLight.copy(alpha = 0.4f),
+                                Color.White
                             )
                         )
                     )
@@ -321,107 +311,109 @@ fun QuoteCard(
                     // Quote Icon
                     Surface(
                         shape = CircleShape,
-                        color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(60.dp)
+                        color = PrimaryBlue,
+                        modifier = Modifier.size(70.dp)
                     ) {
                         Box(contentAlignment = Alignment.Center) {
                             Icon(
                                 Icons.Default.FormatQuote,
                                 contentDescription = null,
-                                modifier = Modifier.size(32.dp),
-                                tint = MaterialTheme.colorScheme.onPrimary
+                                modifier = Modifier.size(36.dp),
+                                tint = Color.White
                             )
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(24.dp))
+                    Spacer(modifier = Modifier.height(28.dp))
 
                     // Quote Text
                     Text(
                         text = "\"${quote.text}\"",
                         style = MaterialTheme.typography.headlineSmall,
-                        color = MaterialTheme.colorScheme.onSurface,
+                        color = TextPrimary,
                         textAlign = TextAlign.Center,
                         fontStyle = FontStyle.Italic,
-                        fontWeight = FontWeight.Medium
+                        fontWeight = FontWeight.Medium,
+                        lineHeight = MaterialTheme.typography.headlineSmall.lineHeight.times(1.2f)
                     )
 
-                    Spacer(modifier = Modifier.height(24.dp))
+                    Spacer(modifier = Modifier.height(28.dp))
 
-                    // Author
+                    // Author Badge
                     Surface(
-                        shape = RoundedCornerShape(20.dp),
-                        color = MaterialTheme.colorScheme.primaryContainer
+                        shape = RoundedCornerShape(24.dp),
+                        color = PrimaryBlue
                     ) {
                         Text(
                             text = "— ${quote.author}",
                             style = MaterialTheme.typography.titleMedium,
-                            color = MaterialTheme.colorScheme.onPrimaryContainer,
+                            color = Color.White,
                             fontWeight = FontWeight.Bold,
-                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                            modifier = Modifier.padding(horizontal = 20.dp, vertical = 10.dp)
                         )
                     }
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(20.dp))
 
                     // Category Badge
                     Surface(
-                        shape = RoundedCornerShape(16.dp),
-                        color = MaterialTheme.colorScheme.secondaryContainer
+                        shape = RoundedCornerShape(20.dp),
+                        color = SurfaceBlueLight
                     ) {
                         Row(
-                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+                            modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
                             verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                            horizontalArrangement = Arrangement.spacedBy(6.dp)
                         ) {
                             Icon(
                                 Icons.Default.Category,
                                 contentDescription = null,
-                                modifier = Modifier.size(14.dp),
-                                tint = MaterialTheme.colorScheme.onSecondaryContainer
+                                modifier = Modifier.size(16.dp),
+                                tint = PrimaryBlue
                             )
                             Text(
                                 text = quote.category.replaceFirstChar { it.uppercase() },
-                                style = MaterialTheme.typography.labelSmall,
-                                color = MaterialTheme.colorScheme.onSecondaryContainer,
-                                fontWeight = FontWeight.Medium
+                                style = MaterialTheme.typography.labelMedium,
+                                color = PrimaryBlue,
+                                fontWeight = FontWeight.Bold
                             )
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(24.dp))
+                    Spacer(modifier = Modifier.height(28.dp))
 
                     // Quote Counter
                     Text(
                         text = "Quote $currentPage of $totalPages",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = TextSecondary,
+                        fontWeight = FontWeight.Medium
                     )
 
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
 
                     // Swipe Hint
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         Icon(
                             Icons.Default.SwipeLeft,
                             contentDescription = null,
-                            modifier = Modifier.size(16.dp),
-                            tint = MaterialTheme.colorScheme.primary
+                            modifier = Modifier.size(20.dp),
+                            tint = PrimaryBlue
                         )
                         Text(
-                            text = "Swipe for more inspiration",
+                            text = "Swipe for more",
                             style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.primary,
-                            fontWeight = FontWeight.Medium
+                            color = PrimaryBlue,
+                            fontWeight = FontWeight.Bold
                         )
                         Icon(
                             Icons.Default.SwipeRight,
                             contentDescription = null,
-                            modifier = Modifier.size(16.dp),
-                            tint = MaterialTheme.colorScheme.primary
+                            modifier = Modifier.size(20.dp),
+                            tint = PrimaryBlue
                         )
                     }
                 }
@@ -444,9 +436,9 @@ fun PageIndicator(
             Surface(
                 shape = CircleShape,
                 color = if (currentPage == index)
-                    MaterialTheme.colorScheme.primary
+                    PrimaryBlue
                 else
-                    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),
+                    BorderBlue,
                 modifier = Modifier
                     .padding(horizontal = 4.dp)
                     .size(if (currentPage == index) 12.dp else 8.dp)
@@ -466,15 +458,15 @@ fun EmptyQuotesState(
     ) {
         Surface(
             shape = CircleShape,
-            color = MaterialTheme.colorScheme.errorContainer,
-            modifier = Modifier.size(100.dp)
+            color = ErrorRed.copy(alpha = 0.1f),
+            modifier = Modifier.size(120.dp)
         ) {
             Box(contentAlignment = Alignment.Center) {
                 Icon(
                     Icons.Default.ErrorOutline,
                     contentDescription = null,
-                    modifier = Modifier.size(48.dp),
-                    tint = MaterialTheme.colorScheme.error
+                    modifier = Modifier.size(60.dp),
+                    tint = ErrorRed
                 )
             }
         }
@@ -483,8 +475,8 @@ fun EmptyQuotesState(
 
         Text(
             text = "No Quotes Available",
-            style = MaterialTheme.typography.titleLarge,
-            color = MaterialTheme.colorScheme.error,
+            style = MaterialTheme.typography.headlineSmall,
+            color = ErrorRed,
             fontWeight = FontWeight.Bold
         )
 
@@ -493,18 +485,22 @@ fun EmptyQuotesState(
         Text(
             text = "Unable to load inspirational quotes",
             style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            color = TextSecondary
         )
 
         Spacer(modifier = Modifier.height(24.dp))
 
         Button(
             onClick = onRefresh,
-            shape = RoundedCornerShape(24.dp)
+            shape = RoundedCornerShape(24.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = PrimaryBlue,
+                contentColor = Color.White
+            )
         ) {
             Icon(Icons.Default.Refresh, contentDescription = null)
             Spacer(modifier = Modifier.width(8.dp))
-            Text("Try Again")
+            Text("Try Again", fontWeight = FontWeight.Bold)
         }
     }
 }
