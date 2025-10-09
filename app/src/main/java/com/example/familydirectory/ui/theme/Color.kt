@@ -2,34 +2,45 @@ package com.example.familydirectory.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-// Primary Blue Palette
-val PrimaryBlue = Color(0xFF1976D2)
-val PrimaryBlueLight = Color(0xFF63A4FF)
-val PrimaryBlueDark = Color(0xFF004BA0)
+// Primary Blue Palette (Professional Ocean Blue)
+val PrimaryBlue = Color(0xFF0D47A1) // Deep Professional Blue
+val PrimaryBlueLight = Color(0xFF5472D3) // Light Blue
+val PrimaryBlueDark = Color(0xFF002171) // Navy Blue
 
-// Secondary Blue Palette
-val SecondaryBlue = Color(0xFF2196F3)
-val SecondaryBlueLight = Color(0xFF6EC6FF)
-val SecondaryBlueDark = Color(0xFF0069C0)
+// Secondary Blue Palette (Sky Blue)
+val SecondaryBlue = Color(0xFF1976D2) // Bright Blue
+val SecondaryBlueLight = Color(0xFF63A4FF) // Light Sky Blue
+val SecondaryBlueDark = Color(0xFF004BA0) // Dark Sky Blue
 
-// Accent Colors
-val AccentBlue = Color(0xFF03A9F4)
-val AccentCyan = Color(0xFF00BCD4)
+// Accent Colors (Complementary)
+val AccentCyan = Color(0xFF00ACC1) // Cyan Blue
+val AccentTeal = Color(0xFF26A69A) // Teal (complementary)
+val AccentOrange = Color(0xFFFF6F00) // Warm Orange (for important actions)
 
-// Background Colors
-val BackgroundLight = Color(0xFFF5F9FF)
-val BackgroundWhite = Color(0xFFFFFFFF)
-val SurfaceBlue = Color(0xFFE3F2FD)
+// Background Colors (Clean Whites and Light Blues)
+val BackgroundWhite = Color(0xFFFFFFFF) // Pure White
+val BackgroundLight = Color(0xFFF5F9FE) // Very Light Blue-White
+val SurfaceWhite = Color(0xFFFAFBFD) // Off-White with blue hint
+val SurfaceBlueLight = Color(0xFFE3F2FD) // Light Blue Surface
 
-// Text Colors
-val TextPrimary = Color(0xFF1A237E)
-val TextSecondary = Color(0xFF455A64)
-val TextHint = Color(0xFF90A4AE)
+// Text Colors (Blue-Grey Tones, NO BLACK)
+val TextPrimary = Color(0xFF1E3A5F) // Deep Blue-Grey (instead of black)
+val TextSecondary = Color(0xFF455A64) // Medium Blue-Grey
+val TextTertiary = Color(0xFF607D8B) // Light Blue-Grey
+val TextHint = Color(0xFF90A4AE) // Very Light Grey-Blue
 
 // Status Colors
-val SuccessGreen = Color(0xFF4CAF50)
-val ErrorRed = Color(0xFFE53935)
-val WarningOrange = Color(0xFFFF9800)
+val SuccessGreen = Color(0xFF66BB6A) // Soft Green
+val ErrorRed = Color(0xFFEF5350) // Soft Red
+val WarningAmber = Color(0xFFFFA726) // Soft Amber
+val InfoBlue = Color(0xFF42A5F5) // Info Blue
 
-// Divider
-val DividerBlue = Color(0xFFBBDEFB)
+// Divider & Border
+val DividerLight = Color(0xFFE3F2FD) // Very light blue
+val BorderBlue = Color(0xFFBBDEFB) // Light blue border
+
+// Gradient Colors
+val GradientBlueStart = Color(0xFF1976D2)
+val GradientBlueEnd = Color(0xFF64B5F6)
+val GradientWhiteStart = Color(0xFFFFFFFF)
+val GradientWhiteEnd = Color(0xFFF5F9FE)
