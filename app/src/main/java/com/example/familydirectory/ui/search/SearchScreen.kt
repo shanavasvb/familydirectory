@@ -249,57 +249,103 @@ fun ActiveFiltersRow(
         )
 
         filters.parish?.let {
-            AssistChip(
+            FilterChip(
+                selected = true,
                 onClick = {},
-                label = { Text(it, maxLines = 1, overflow = TextOverflow.Ellipsis) },
-                colors = AssistChipDefaults.assistChipColors(
-                    containerColor = SurfaceBlueLight,
-                    labelColor = PrimaryBlue
+                label = {
+                    Text(
+                        it,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        fontWeight = FontWeight.Medium
+                    )
+                },
+                colors = FilterChipDefaults.filterChipColors(
+                    selectedContainerColor = SurfaceBlueLight,
+                    selectedLabelColor = PrimaryBlue
                 ),
-                border = AssistChipDefaults.assistChipBorder(
-                    borderColor = PrimaryBlue.copy(alpha = 0.3f)
+                border = FilterChipDefaults.filterChipBorder(
+                    enabled = true,
+                    selected = true,
+                    borderColor = PrimaryBlue.copy(alpha = 0.5f),
+                    selectedBorderColor = PrimaryBlue,
+                    borderWidth = 1.dp,
+                    selectedBorderWidth = 1.5.dp
                 )
             )
         }
 
         filters.region?.let {
-            AssistChip(
+            FilterChip(
+                selected = true,
                 onClick = {},
-                label = { Text(it) },
-                colors = AssistChipDefaults.assistChipColors(
-                    containerColor = SurfaceBlueLight,
-                    labelColor = PrimaryBlue
+                label = {
+                    Text(
+                        it,
+                        fontWeight = FontWeight.Medium
+                    )
+                },
+                colors = FilterChipDefaults.filterChipColors(
+                    selectedContainerColor = SurfaceBlueLight,
+                    selectedLabelColor = PrimaryBlue
                 ),
-                border = AssistChipDefaults.assistChipBorder(
-                    borderColor = PrimaryBlue.copy(alpha = 0.3f)
+                border = FilterChipDefaults.filterChipBorder(
+                    enabled = true,
+                    selected = true,
+                    borderColor = PrimaryBlue.copy(alpha = 0.5f),
+                    selectedBorderColor = PrimaryBlue,
+                    borderWidth = 1.dp,
+                    selectedBorderWidth = 1.5.dp
                 )
             )
         }
 
         filters.bloodGroup?.let {
-            AssistChip(
+            FilterChip(
+                selected = true,
                 onClick = {},
-                label = { Text(it) },
-                colors = AssistChipDefaults.assistChipColors(
-                    containerColor = SurfaceBlueLight,
-                    labelColor = PrimaryBlue
+                label = {
+                    Text(
+                        it,
+                        fontWeight = FontWeight.Medium
+                    )
+                },
+                colors = FilterChipDefaults.filterChipColors(
+                    selectedContainerColor = SurfaceBlueLight,
+                    selectedLabelColor = PrimaryBlue
                 ),
-                border = AssistChipDefaults.assistChipBorder(
-                    borderColor = PrimaryBlue.copy(alpha = 0.3f)
+                border = FilterChipDefaults.filterChipBorder(
+                    enabled = true,
+                    selected = true,
+                    borderColor = PrimaryBlue.copy(alpha = 0.5f),
+                    selectedBorderColor = PrimaryBlue,
+                    borderWidth = 1.dp,
+                    selectedBorderWidth = 1.5.dp
                 )
             )
         }
 
         filters.gender?.let {
-            AssistChip(
+            FilterChip(
+                selected = true,
                 onClick = {},
-                label = { Text(it) },
-                colors = AssistChipDefaults.assistChipColors(
-                    containerColor = SurfaceBlueLight,
-                    labelColor = PrimaryBlue
+                label = {
+                    Text(
+                        it,
+                        fontWeight = FontWeight.Medium
+                    )
+                },
+                colors = FilterChipDefaults.filterChipColors(
+                    selectedContainerColor = SurfaceBlueLight,
+                    selectedLabelColor = PrimaryBlue
                 ),
-                border = AssistChipDefaults.assistChipBorder(
-                    borderColor = PrimaryBlue.copy(alpha = 0.3f)
+                border = FilterChipDefaults.filterChipBorder(
+                    enabled = true,
+                    selected = true,
+                    borderColor = PrimaryBlue.copy(alpha = 0.5f),
+                    selectedBorderColor = PrimaryBlue,
+                    borderWidth = 1.dp,
+                    selectedBorderWidth = 1.5.dp
                 )
             )
         }
@@ -459,7 +505,7 @@ fun SearchResultCard(
             // Footer
             if (result.family.familyMembers.isNotEmpty()) {
                 Spacer(modifier = Modifier.height(16.dp))
-                Divider(color = DividerLight)
+                HorizontalDivider(color = DividerLight)
                 Spacer(modifier = Modifier.height(12.dp))
 
                 Row(
