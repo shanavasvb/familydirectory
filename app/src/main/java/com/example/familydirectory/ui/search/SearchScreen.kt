@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -15,11 +16,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.familydirectory.data.model.SearchResult
+import com.example.familydirectory.ui.theme.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -45,20 +48,20 @@ fun SearchScreen(
                 title = {
                     Text(
                         "Family Directory",
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
                     )
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimary,
-                    actionIconContentColor = MaterialTheme.colorScheme.onPrimary
+                    containerColor = PrimaryBlue
                 ),
                 actions = {
                     BadgedBox(
                         badge = {
                             if (hasActiveFilters) {
                                 Badge(
-                                    containerColor = MaterialTheme.colorScheme.error
+                                    containerColor = AccentOrange,
+                                    contentColor = Color.White
                                 ) {
                                     Text("${listOfNotNull(
                                         filters.parish,
@@ -74,7 +77,7 @@ fun SearchScreen(
                             Icon(
                                 Icons.Default.FilterList,
                                 "Filters",
-                                tint = MaterialTheme.colorScheme.onPrimary
+                                tint = Color.White
                             )
                         }
                     }
@@ -82,92 +85,88 @@ fun SearchScreen(
             )
         }
     ) { padding ->
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
+                .background(BackgroundLight)
                 .padding(padding)
         ) {
-            // Search Bar
-            Surface(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                shape = RoundedCornerShape(28.dp),
-                shadowElevation = 4.dp,
-                color = MaterialTheme.colorScheme.surface
+            Column(
+                modifier = Modifier.fillMaxSize()
             ) {
-                SearchBar(
-                    query = searchQuery,
-                    onQueryChange = { viewModel.onSearchQueryChange(it) },
-                    onClearClick = { viewModel.clearSearch() }
-                )
-            }
+                // Search Bar with Shadow
+                Surface(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                        .shadow(4.dp, RoundedCornerShape(28.dp)),
+                    shape = RoundedCornerShape(28.dp),
+                    color = Color.White
+                ) {
+                    SearchBar(
+                        query = searchQuery,
+                        onQueryChange = { viewModel.onSearchQueryChange(it) },
+                        onClearClick = { viewModel.clearSearch() }
+                    )
+                }
 
-            // Active Filters Chips
-            if (hasActiveFilters) {
-                ActiveFiltersRow(
-                    filters = filters,
-                    onClearFilters = { viewModel.clearFilters() },
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-                )
-            }
+                // Active Filters
+                if (hasActiveFilters) {
+                    Surface(
+                        modifier = Modifier.fillMaxWidth(),
+                        color = Color.White,
+                        shadowElevation = 2.dp
+                    ) {
+                        ActiveFiltersRow(
+                            filters = filters,
+                            onClearFilters = { viewModel.clearFilters() },
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
+                        )
+                    }
+                }
 
-            // Content
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .weight(1f)
-            ) {
-                when {
-                    isLoading -> {
-                        Column(
-                            modifier = Modifier.align(Alignment.Center),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            CircularProgressIndicator(
-                                color = MaterialTheme.colorScheme.primary
-                            )
-                            Spacer(modifier = Modifier.height(16.dp))
-                            Text(
-                                "Searching...",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                // Content
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .weight(1f)
+                ) {
+                    when {
+                        isLoading -> {
+                            LoadingState(modifier = Modifier.align(Alignment.Center))
+                        }
+
+                        error != null && searchResults.isEmpty() -> {
+                            EmptySearchState(
+                                message = error ?: "No results found",
+                                modifier = Modifier.align(Alignment.Center)
                             )
                         }
-                    }
 
-                    error != null && searchResults.isEmpty() -> {
-                        EmptySearchState(
-                            message = error ?: "No results found",
-                            modifier = Modifier.align(Alignment.Center)
-                        )
-                    }
+                        searchQuery.isBlank() && !hasActiveFilters -> {
+                            InitialSearchState(
+                                modifier = Modifier.align(Alignment.Center)
+                            )
+                        }
 
-                    searchQuery.isBlank() && !hasActiveFilters -> {
-                        InitialSearchState(
-                            modifier = Modifier.align(Alignment.Center)
-                        )
-                    }
+                        searchResults.isEmpty() -> {
+                            EmptySearchState(
+                                message = "No families found",
+                                modifier = Modifier.align(Alignment.Center)
+                            )
+                        }
 
-                    searchResults.isEmpty() && (searchQuery.isNotBlank() || hasActiveFilters) -> {
-                        EmptySearchState(
-                            message = "No families found",
-                            modifier = Modifier.align(Alignment.Center)
-                        )
-                    }
-
-                    else -> {
-                        SearchResultsList(
-                            results = searchResults,
-                            onFamilyClick = onFamilyClick
-                        )
+                        else -> {
+                            SearchResultsList(
+                                results = searchResults,
+                                onFamilyClick = onFamilyClick
+                            )
+                        }
                     }
                 }
             }
         }
 
-        // Filter Bottom Sheet
         if (showFilterSheet) {
             FilterBottomSheet(
                 viewModel = viewModel,
@@ -190,14 +189,14 @@ fun SearchBar(
         placeholder = {
             Text(
                 "Search by name, place, phone...",
-                style = MaterialTheme.typography.bodyMedium
+                color = TextHint
             )
         },
         leadingIcon = {
             Icon(
                 Icons.Default.Search,
                 contentDescription = "Search",
-                tint = MaterialTheme.colorScheme.primary
+                tint = PrimaryBlue
             )
         },
         trailingIcon = {
@@ -206,17 +205,19 @@ fun SearchBar(
                     Icon(
                         Icons.Default.Clear,
                         contentDescription = "Clear",
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        tint = TextSecondary
                     )
                 }
             }
         },
         singleLine = true,
         colors = OutlinedTextFieldDefaults.colors(
-            focusedBorderColor = MaterialTheme.colorScheme.primary,
-            unfocusedBorderColor = MaterialTheme.colorScheme.outline,
-            focusedContainerColor = MaterialTheme.colorScheme.surface,
-            unfocusedContainerColor = MaterialTheme.colorScheme.surface
+            focusedBorderColor = PrimaryBlue,
+            unfocusedBorderColor = BorderBlue,
+            focusedContainerColor = Color.White,
+            unfocusedContainerColor = Color.White,
+            focusedTextColor = TextPrimary,
+            unfocusedTextColor = TextPrimary
         ),
         shape = RoundedCornerShape(28.dp)
     )
@@ -233,65 +234,82 @@ fun ActiveFiltersRow(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
+        Icon(
+            Icons.Default.FilterAlt,
+            contentDescription = null,
+            tint = PrimaryBlue,
+            modifier = Modifier.size(20.dp)
+        )
+
         Text(
-            text = "Filters:",
+            text = "Active:",
             style = MaterialTheme.typography.labelMedium,
-            color = MaterialTheme.colorScheme.primary,
+            color = PrimaryBlue,
             fontWeight = FontWeight.Bold
         )
 
         filters.parish?.let {
-            FilterChip(
-                selected = true,
+            AssistChip(
                 onClick = {},
                 label = { Text(it, maxLines = 1, overflow = TextOverflow.Ellipsis) },
-                colors = FilterChipDefaults.filterChipColors(
-                    selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-                    selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer
+                colors = AssistChipDefaults.assistChipColors(
+                    containerColor = SurfaceBlueLight,
+                    labelColor = PrimaryBlue
+                ),
+                border = AssistChipDefaults.assistChipBorder(
+                    borderColor = PrimaryBlue.copy(alpha = 0.3f)
                 )
             )
         }
 
         filters.region?.let {
-            FilterChip(
-                selected = true,
+            AssistChip(
                 onClick = {},
                 label = { Text(it) },
-                colors = FilterChipDefaults.filterChipColors(
-                    selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-                    selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer
+                colors = AssistChipDefaults.assistChipColors(
+                    containerColor = SurfaceBlueLight,
+                    labelColor = PrimaryBlue
+                ),
+                border = AssistChipDefaults.assistChipBorder(
+                    borderColor = PrimaryBlue.copy(alpha = 0.3f)
                 )
             )
         }
 
         filters.bloodGroup?.let {
-            FilterChip(
-                selected = true,
+            AssistChip(
                 onClick = {},
                 label = { Text(it) },
-                colors = FilterChipDefaults.filterChipColors(
-                    selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-                    selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer
+                colors = AssistChipDefaults.assistChipColors(
+                    containerColor = SurfaceBlueLight,
+                    labelColor = PrimaryBlue
+                ),
+                border = AssistChipDefaults.assistChipBorder(
+                    borderColor = PrimaryBlue.copy(alpha = 0.3f)
                 )
             )
         }
 
         filters.gender?.let {
-            FilterChip(
-                selected = true,
+            AssistChip(
                 onClick = {},
                 label = { Text(it) },
-                colors = FilterChipDefaults.filterChipColors(
-                    selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-                    selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer
+                colors = AssistChipDefaults.assistChipColors(
+                    containerColor = SurfaceBlueLight,
+                    labelColor = PrimaryBlue
+                ),
+                border = AssistChipDefaults.assistChipBorder(
+                    borderColor = PrimaryBlue.copy(alpha = 0.3f)
                 )
             )
         }
 
+        Spacer(modifier = Modifier.weight(1f))
+
         TextButton(onClick = onClearFilters) {
             Text(
-                "Clear All",
-                color = MaterialTheme.colorScheme.error,
+                "Clear",
+                color = ErrorRed,
                 fontWeight = FontWeight.Medium
             )
         }
@@ -310,24 +328,32 @@ fun SearchResultsList(
         item {
             Surface(
                 modifier = Modifier.fillMaxWidth(),
-                color = MaterialTheme.colorScheme.primaryContainer,
+                color = SurfaceBlueLight,
                 shape = RoundedCornerShape(12.dp)
             ) {
                 Row(
-                    modifier = Modifier.padding(12.dp),
+                    modifier = Modifier.padding(16.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(
-                        Icons.Default.Info,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                        modifier = Modifier.size(20.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
+                    Surface(
+                        shape = CircleShape,
+                        color = PrimaryBlue,
+                        modifier = Modifier.size(36.dp)
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Text(
+                                text = "${results.size}",
+                                color = Color.White,
+                                fontWeight = FontWeight.Bold,
+                                style = MaterialTheme.typography.titleMedium
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.width(12.dp))
                     Text(
-                        text = "${results.size} result${if (results.size != 1) "s" else ""} found",
-                        style = MaterialTheme.typography.labelLarge,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer,
+                        text = "Result${if (results.size != 1) "s" else ""} Found",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = PrimaryBlue,
                         fontWeight = FontWeight.Bold
                     )
                 }
@@ -351,107 +377,116 @@ fun SearchResultCard(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .shadow(2.dp, RoundedCornerShape(16.dp))
             .clickable(onClick = onClick),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
+            containerColor = Color.White
         ),
-        shape = RoundedCornerShape(16.dp)
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(3.dp)
     ) {
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
-            // Family Head with gradient background
+            // Header with Gradient
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clip(RoundedCornerShape(8.dp))
+                    .clip(RoundedCornerShape(12.dp))
                     .background(
                         Brush.horizontalGradient(
                             colors = listOf(
-                                MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
-                                MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
+                                GradientBlueStart,
+                                GradientBlueEnd
                             )
                         )
                     )
-                    .padding(12.dp)
+                    .padding(16.dp)
             ) {
                 Column {
                     Text(
                         text = result.family.familyHead,
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.primary
+                        color = Color.White
                     )
 
-                    Text(
-                        text = "Matched in: ${result.matchedIn}",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.secondary,
-                        fontWeight = FontWeight.Medium,
-                        modifier = Modifier.padding(top = 4.dp)
-                    )
-                }
-            }
+                    Spacer(modifier = Modifier.height(4.dp))
 
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // Details
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                // Location
-                DetailItem(
-                    icon = Icons.Default.LocationOn,
-                    text = result.family.place,
-                    modifier = Modifier.weight(1f)
-                )
-
-                // Phone
-                if (result.family.phone.isNotEmpty()) {
-                    DetailItem(
-                        icon = Icons.Default.Phone,
-                        text = result.family.phone,
-                        modifier = Modifier.weight(1f)
-                    )
-                }
-            }
-
-            // Parish
-            if (result.family.parish.isNotEmpty()) {
-                Spacer(modifier = Modifier.height(8.dp))
-                DetailItem(
-                    icon = Icons.Default.Church,
-                    text = result.family.parish
-                )
-            }
-
-            // Family Members Count
-            if (result.family.familyMembers.isNotEmpty()) {
-                Spacer(modifier = Modifier.height(12.dp))
-                Surface(
-                    color = MaterialTheme.colorScheme.secondaryContainer,
-                    shape = RoundedCornerShape(8.dp)
-                ) {
-                    Row(
-                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                    Surface(
+                        shape = RoundedCornerShape(12.dp),
+                        color = Color.White.copy(alpha = 0.2f)
                     ) {
-                        Icon(
-                            Icons.Default.People,
-                            contentDescription = null,
-                            modifier = Modifier.size(16.dp),
-                            tint = MaterialTheme.colorScheme.onSecondaryContainer
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
                         Text(
-                            text = "${result.family.familyMembers.size} member${if (result.family.familyMembers.size != 1) "s" else ""}",
+                            text = "Matched: ${result.matchedIn}",
                             style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSecondaryContainer,
-                            fontWeight = FontWeight.Medium
+                            color = Color.White,
+                            fontWeight = FontWeight.Medium,
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
                         )
                     }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Details with Icons
+            if (result.family.place.isNotEmpty()) {
+                DetailRow(
+                    icon = Icons.Default.LocationOn,
+                    label = "Location",
+                    value = result.family.place
+                )
+            }
+
+            if (result.family.phone.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(8.dp))
+                DetailRow(
+                    icon = Icons.Default.Phone,
+                    label = "Phone",
+                    value = result.family.phone
+                )
+            }
+
+            if (result.family.parish.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(8.dp))
+                DetailRow(
+                    icon = Icons.Default.Church,
+                    label = "Parish",
+                    value = result.family.parish
+                )
+            }
+
+            // Footer
+            if (result.family.familyMembers.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(16.dp))
+                Divider(color = DividerLight)
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        Icons.Default.People,
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp),
+                        tint = SecondaryBlue
+                    )
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(
+                        text = "${result.family.familyMembers.size} Family Member${if (result.family.familyMembers.size != 1) "s" else ""}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = SecondaryBlue,
+                        fontWeight = FontWeight.Medium
+                    )
+
+                    Spacer(modifier = Modifier.weight(1f))
+
+                    Icon(
+                        Icons.Default.ArrowForward,
+                        contentDescription = "View Details",
+                        modifier = Modifier.size(18.dp),
+                        tint = PrimaryBlue
+                    )
                 }
             }
         }
@@ -459,28 +494,62 @@ fun SearchResultCard(
 }
 
 @Composable
-fun DetailItem(
+fun DetailRow(
     icon: androidx.compose.ui.graphics.vector.ImageVector,
-    text: String,
-    modifier: Modifier = Modifier
+    label: String,
+    value: String
 ) {
     Row(
-        modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(6.dp)
+        horizontalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            modifier = Modifier.size(18.dp),
-            tint = MaterialTheme.colorScheme.primary
+        Surface(
+            shape = CircleShape,
+            color = SurfaceBlueLight,
+            modifier = Modifier.size(32.dp)
+        ) {
+            Box(contentAlignment = Alignment.Center) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    modifier = Modifier.size(16.dp),
+                    tint = PrimaryBlue
+                )
+            }
+        }
+
+        Column {
+            Text(
+                text = label,
+                style = MaterialTheme.typography.labelSmall,
+                color = TextTertiary
+            )
+            Text(
+                text = value,
+                style = MaterialTheme.typography.bodyMedium,
+                color = TextPrimary,
+                fontWeight = FontWeight.Medium
+            )
+        }
+    }
+}
+
+@Composable
+fun LoadingState(modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier.padding(32.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        CircularProgressIndicator(
+            color = PrimaryBlue,
+            strokeWidth = 3.dp
         )
+        Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = text,
+            text = "Searching...",
             style = MaterialTheme.typography.bodyMedium,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            color = MaterialTheme.colorScheme.onSurface
+            color = TextSecondary,
+            fontWeight = FontWeight.Medium
         )
     }
 }
@@ -493,15 +562,15 @@ fun InitialSearchState(modifier: Modifier = Modifier) {
     ) {
         Surface(
             shape = RoundedCornerShape(50),
-            color = MaterialTheme.colorScheme.primaryContainer,
-            modifier = Modifier.size(100.dp)
+            color = SurfaceBlueLight,
+            modifier = Modifier.size(120.dp)
         ) {
             Box(contentAlignment = Alignment.Center) {
                 Icon(
                     imageVector = Icons.Default.Search,
                     contentDescription = null,
-                    modifier = Modifier.size(48.dp),
-                    tint = MaterialTheme.colorScheme.primary
+                    modifier = Modifier.size(56.dp),
+                    tint = PrimaryBlue
                 )
             }
         }
@@ -510,17 +579,17 @@ fun InitialSearchState(modifier: Modifier = Modifier) {
 
         Text(
             text = "Search Family Directory",
-            style = MaterialTheme.typography.titleLarge,
-            color = MaterialTheme.colorScheme.primary,
+            style = MaterialTheme.typography.headlineSmall,
+            color = PrimaryBlue,
             fontWeight = FontWeight.Bold
         )
 
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = "Search by name, place, phone, or use filters",
+            text = "Enter name, place, phone or use filters",
             style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            color = TextSecondary
         )
     }
 }
@@ -536,15 +605,15 @@ fun EmptySearchState(
     ) {
         Surface(
             shape = RoundedCornerShape(50),
-            color = MaterialTheme.colorScheme.errorContainer,
-            modifier = Modifier.size(100.dp)
+            color = ErrorRed.copy(alpha = 0.1f),
+            modifier = Modifier.size(120.dp)
         ) {
             Box(contentAlignment = Alignment.Center) {
                 Icon(
                     imageVector = Icons.Default.SearchOff,
                     contentDescription = null,
-                    modifier = Modifier.size(48.dp),
-                    tint = MaterialTheme.colorScheme.error
+                    modifier = Modifier.size(56.dp),
+                    tint = ErrorRed
                 )
             }
         }
@@ -553,9 +622,17 @@ fun EmptySearchState(
 
         Text(
             text = message,
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            style = MaterialTheme.typography.titleLarge,
+            color = TextPrimary,
             fontWeight = FontWeight.Medium
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
+            text = "Try different keywords or filters",
+            style = MaterialTheme.typography.bodyMedium,
+            color = TextSecondary
         )
     }
 }

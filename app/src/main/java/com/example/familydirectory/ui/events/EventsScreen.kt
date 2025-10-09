@@ -2,7 +2,6 @@ package com.example.familydirectory.ui.events
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -11,23 +10,21 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.PhotoLibrary
-import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import com.example.familydirectory.ui.theme.*
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -50,32 +47,41 @@ fun EventsScreen(
                 title = {
                     Text(
                         "Events Gallery",
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
                     )
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimary
-                )
+                    containerColor = PrimaryBlue
+                ),
+                actions = {
+                    IconButton(onClick = { viewModel.loadEvents() }) {
+                        Icon(
+                            Icons.Default.Refresh,
+                            "Refresh",
+                            tint = Color.White
+                        )
+                    }
+                }
             )
         },
         floatingActionButton = {
             ExtendedFloatingActionButton(
                 onClick = onNavigateToUpload,
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary,
-                elevation = FloatingActionButtonDefaults.elevation(8.dp)
+                containerColor = AccentOrange,
+                contentColor = Color.White,
+                elevation = FloatingActionButtonDefaults.elevation(6.dp)
             ) {
                 Icon(Icons.Default.Add, "Upload Event")
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("Upload Event", fontWeight = FontWeight.Bold)
+                Text("Upload", fontWeight = FontWeight.Bold)
             }
         }
     ) { padding ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
+                .background(BackgroundLight)
                 .padding(padding)
         ) {
             when {
@@ -85,13 +91,15 @@ fun EventsScreen(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         CircularProgressIndicator(
-                            color = MaterialTheme.colorScheme.primary
+                            color = PrimaryBlue,
+                            strokeWidth = 3.dp
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(
                             "Loading events...",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = TextSecondary,
+                            fontWeight = FontWeight.Medium
                         )
                     }
                 }
@@ -113,6 +121,11 @@ fun EventsScreen(
                                 onLikeClick = { viewModel.toggleLike(event.id) }
                             )
                         }
+
+                        // Bottom spacing for FAB
+                        item {
+                            Spacer(modifier = Modifier.height(80.dp))
+                        }
                     }
                 }
             }
@@ -128,13 +141,12 @@ fun EventCard(
     var isLiked by remember { mutableStateOf(false) }
 
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .shadow(4.dp, RoundedCornerShape(20.dp)),
+        modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
+            containerColor = Color.White
         ),
-        shape = RoundedCornerShape(20.dp)
+        shape = RoundedCornerShape(20.dp),
+        elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Column {
             // Image Carousel
@@ -143,15 +155,15 @@ fun EventCard(
                     images = event.images.map { it.url },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(300.dp)
+                        .height(280.dp)
                 )
             }
 
-            // Event Details
+            // Event Content
             Column(
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier.padding(20.dp)
             ) {
-                // Title with gradient background
+                // Title with Gradient Background
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -159,46 +171,48 @@ fun EventCard(
                         .background(
                             Brush.horizontalGradient(
                                 colors = listOf(
-                                    MaterialTheme.colorScheme.primaryContainer,
-                                    MaterialTheme.colorScheme.secondaryContainer
+                                    GradientBlueStart,
+                                    GradientBlueEnd
                                 )
                             )
                         )
-                        .padding(12.dp)
+                        .padding(16.dp)
                 ) {
                     Text(
                         text = event.title,
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer,
+                        color = Color.White,
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis
                     )
                 }
 
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
-                // Date with icon
+                // Date with Icon
                 Row(
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Surface(
                         shape = CircleShape,
-                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
-                        modifier = Modifier.size(32.dp)
+                        color = SurfaceBlueLight,
+                        modifier = Modifier.size(36.dp)
                     ) {
                         Box(contentAlignment = Alignment.Center) {
-                            Text(
-                                text = "📅",
-                                style = MaterialTheme.typography.bodyMedium
+                            Icon(
+                                Icons.Default.CalendarToday,
+                                contentDescription = null,
+                                modifier = Modifier.size(18.dp),
+                                tint = PrimaryBlue
                             )
                         }
                     }
-                    Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = formatDate(event.createdAt),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = TextSecondary,
                         fontWeight = FontWeight.Medium
                     )
                 }
@@ -209,7 +223,7 @@ fun EventCard(
                     Text(
                         text = event.description,
                         style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurface,
+                        color = TextPrimary,
                         maxLines = 3,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -217,9 +231,9 @@ fun EventCard(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                Divider(color = MaterialTheme.colorScheme.outlineVariant)
+                HorizontalDivider(color = DividerLight, thickness = 1.dp)
 
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
                 // Actions Row
                 Row(
@@ -228,50 +242,54 @@ fun EventCard(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     // Like Button
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        IconButton(
-                            onClick = {
-                                isLiked = !isLiked
-                                onLikeClick()
-                            }
-                        ) {
-                            Icon(
-                                imageVector = if (isLiked) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
-                                contentDescription = "Like",
-                                tint = if (isLiked) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface,
-                                modifier = Modifier.size(24.dp)
-                            )
-                        }
-                        Text(
-                            text = "${event.likesCount + if (isLiked) 1 else 0}",
-                            style = MaterialTheme.typography.bodyMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                    }
-
-                    // Photos Count
                     Surface(
+                        onClick = {
+                            isLiked = !isLiked
+                            onLikeClick()
+                        },
                         shape = RoundedCornerShape(20.dp),
-                        color = MaterialTheme.colorScheme.primaryContainer
+                        color = if (isLiked) ErrorRed.copy(alpha = 0.1f) else SurfaceBlueLight
                     ) {
                         Row(
-                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                            verticalAlignment = Alignment.CenterVertically
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(6.dp)
+                        ) {
+                            Icon(
+                                imageVector = if (isLiked) Icons.Filled.Favorite else Icons.Default.FavoriteBorder,
+                                contentDescription = "Like",
+                                tint = if (isLiked) ErrorRed else PrimaryBlue,
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Text(
+                                text = "${event.likesCount + if (isLiked) 1 else 0}",
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = if (isLiked) ErrorRed else PrimaryBlue
+                            )
+                        }
+                    }
+
+                    // Photos Count Badge
+                    Surface(
+                        shape = RoundedCornerShape(20.dp),
+                        color = SurfaceBlueLight
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(6.dp)
                         ) {
                             Icon(
                                 imageVector = Icons.Default.PhotoLibrary,
                                 contentDescription = null,
-                                modifier = Modifier.size(16.dp),
-                                tint = MaterialTheme.colorScheme.onPrimaryContainer
+                                modifier = Modifier.size(18.dp),
+                                tint = PrimaryBlue
                             )
-                            Spacer(modifier = Modifier.width(4.dp))
                             Text(
                                 text = "${event.images.size} photo${if (event.images.size != 1) "s" else ""}",
                                 style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                color = PrimaryBlue,
                                 fontWeight = FontWeight.Medium
                             )
                         }
@@ -282,7 +300,7 @@ fun EventCard(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ImageCarousel(
     images: List<String>,
@@ -303,17 +321,17 @@ fun ImageCarousel(
             )
         }
 
-        // Gradient overlay for better page indicator visibility
+        // Gradient Overlay
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(60.dp)
+                .height(80.dp)
                 .align(Alignment.BottomCenter)
                 .background(
                     Brush.verticalGradient(
                         colors = listOf(
-                            MaterialTheme.colorScheme.surface.copy(alpha = 0f),
-                            MaterialTheme.colorScheme.surface.copy(alpha = 0.8f)
+                            Color.Transparent,
+                            Color.White.copy(alpha = 0.9f)
                         )
                     )
                 )
@@ -331,9 +349,9 @@ fun ImageCarousel(
                     Surface(
                         shape = CircleShape,
                         color = if (pagerState.currentPage == index)
-                            MaterialTheme.colorScheme.primary
+                            PrimaryBlue
                         else
-                            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),
+                            Color.White.copy(alpha = 0.5f),
                         modifier = Modifier
                             .padding(horizontal = 4.dp)
                             .size(if (pagerState.currentPage == index) 10.dp else 8.dp)
@@ -342,21 +360,21 @@ fun ImageCarousel(
             }
         }
 
-        // Page Counter Badge
+        // Page Counter
         if (images.size > 1) {
             Surface(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
                     .padding(16.dp),
                 shape = RoundedCornerShape(20.dp),
-                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.9f)
+                color = PrimaryBlue.copy(alpha = 0.9f)
             ) {
                 Text(
                     text = "${pagerState.currentPage + 1}/${images.size}",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onPrimary,
+                    style = MaterialTheme.typography.labelMedium,
+                    color = Color.White,
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
+                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
                 )
             }
         }
@@ -374,15 +392,15 @@ fun EmptyEventsState(
     ) {
         Surface(
             shape = RoundedCornerShape(50),
-            color = MaterialTheme.colorScheme.primaryContainer,
-            modifier = Modifier.size(120.dp)
+            color = SurfaceBlueLight,
+            modifier = Modifier.size(140.dp)
         ) {
             Box(contentAlignment = Alignment.Center) {
                 Icon(
                     imageVector = Icons.Default.PhotoLibrary,
                     contentDescription = null,
-                    modifier = Modifier.size(60.dp),
-                    tint = MaterialTheme.colorScheme.primary
+                    modifier = Modifier.size(70.dp),
+                    tint = PrimaryBlue
                 )
             }
         }
@@ -391,17 +409,18 @@ fun EmptyEventsState(
 
         Text(
             text = "No Events Yet",
-            style = MaterialTheme.typography.headlineSmall,
-            color = MaterialTheme.colorScheme.primary,
+            style = MaterialTheme.typography.headlineMedium,
+            color = PrimaryBlue,
             fontWeight = FontWeight.Bold
         )
 
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = "Share your first event photo with the community",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            text = "Share your first event photo\nwith the community",
+            style = MaterialTheme.typography.bodyLarge,
+            color = TextSecondary,
+            textAlign = androidx.compose.ui.text.style.TextAlign.Center
         )
 
         Spacer(modifier = Modifier.height(32.dp))
@@ -409,10 +428,12 @@ fun EmptyEventsState(
         Button(
             onClick = onUploadClick,
             shape = RoundedCornerShape(24.dp),
-            elevation = ButtonDefaults.buttonElevation(4.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.primary
-            )
+                containerColor = AccentOrange,
+                contentColor = Color.White
+            ),
+            elevation = ButtonDefaults.buttonElevation(4.dp),
+            contentPadding = PaddingValues(horizontal = 32.dp, vertical = 16.dp)
         ) {
             Icon(Icons.Default.Add, contentDescription = null)
             Spacer(modifier = Modifier.width(8.dp))
