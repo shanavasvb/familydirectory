@@ -1,10 +1,11 @@
 package com.example.familydirectory.ui.quotes
 
-import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.animation.*
+import androidx.compose.animation.core.*
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -13,117 +14,43 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.blur
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.ui.unit.sp
+import com.example.familydirectory.R
+import com.example.familydirectory.data.repository.BibleQuotesRepository
 import com.example.familydirectory.ui.theme.*
-import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 import java.text.SimpleDateFormat
 import java.util.*
 
-// Quote Data Model
-data class Quote(
-    val id: String = "",
-    val text: String = "",
-    val author: String = "",
-    val category: String = "",
-    val date: Date = Date()
-)
-
-// QuotesViewModel
-class QuotesViewModel : ViewModel() {
-    private val firestore = FirebaseFirestore.getInstance()
-
-    private val _quotes = MutableStateFlow<List<Quote>>(emptyList())
-    val quotes: StateFlow<List<Quote>> = _quotes.asStateFlow()
-
-    private val _isLoading = MutableStateFlow(true)
-    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
-
-    private val _selectedCategory = MutableStateFlow("all")
-    val selectedCategory: StateFlow<String> = _selectedCategory.asStateFlow()
-
-    init {
-        loadQuotes()
-    }
-
-    fun loadQuotes() {
-        viewModelScope.launch {
-            try {
-                _isLoading.value = true
-                val snapshot = firestore.collection("quotes")
-                    .get()
-                    .await()
-
-                val quotesList = snapshot.documents.mapNotNull { doc ->
-                    try {
-                        Quote(
-                            id = doc.id,
-                            text = doc.getString("text") ?: "",
-                            author = doc.getString("author") ?: "",
-                            category = doc.getString("category") ?: "",
-                            date = doc.getDate("date") ?: Date()
-                        )
-                    } catch (e: Exception) {
-                        null
-                    }
-                }
-
-                _quotes.value = quotesList.shuffled()
-                _isLoading.value = false
-            } catch (e: Exception) {
-                _quotes.value = emptyList()
-                _isLoading.value = false
-            }
-        }
-    }
-
-    fun selectCategory(category: String) {
-        _selectedCategory.value = category
-    }
-
-    fun getFilteredQuotes(): List<Quote> {
-        return if (_selectedCategory.value == "all") {
-            _quotes.value
-        } else {
-            _quotes.value.filter { it.category == _selectedCategory.value }
-        }
-    }
-
-    fun getCategories(): List<String> {
-        return listOf("all") + _quotes.value.map { it.category }.distinct().sorted()
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun QuotesScreen(
-    viewModel: QuotesViewModel = viewModel()
-) {
-    val quotes by viewModel.quotes.collectAsState()
-    val isLoading by viewModel.isLoading.collectAsState()
-    val selectedCategory by viewModel.selectedCategory.collectAsState()
+fun QuotesScreen() {
+    val todayQuote = remember { BibleQuotesRepository.getTodayQuote() }
+    var visible by remember { mutableStateOf(false) }
 
-    val filteredQuotes = remember(quotes, selectedCategory) {
-        viewModel.getFilteredQuotes()
+    val calendar = Calendar.getInstance()
+    val dateFormat = SimpleDateFormat("EEEE, MMMM dd, yyyy", Locale.getDefault())
+    val malayalamDateFormat = SimpleDateFormat("EEEE", Locale("ml", "IN"))
+
+    LaunchedEffect(Unit) {
+        kotlinx.coroutines.delay(300)
+        visible = true
     }
-
-    val categories = remember(quotes) {
-        viewModel.getCategories()
-    }
-
-    val pagerState = rememberPagerState(pageCount = { filteredQuotes.size })
 
     Scaffold(
         topBar = {
@@ -131,26 +58,27 @@ fun QuotesScreen(
                 title = {
                     Column {
                         Text(
-                            "Daily Inspiration",
+                            "ദൈനംദിന തിരുവചനം",
                             fontWeight = FontWeight.Bold,
-                            color = Color.White
+                            color = PureWhite,
+                            fontSize = MaterialTheme.typography.titleLarge.fontSize
                         )
                         Text(
-                            SimpleDateFormat("EEEE, MMMM dd, yyyy", Locale.getDefault()).format(Date()),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = Color.White.copy(alpha = 0.9f)
+                            "Daily Bible Verse",
+                            fontSize = MaterialTheme.typography.bodySmall.fontSize,
+                            color = PureWhite.copy(alpha = 0.9f)
                         )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = PrimaryBlue
+                    containerColor = DeepRoyalBlue
                 ),
                 actions = {
-                    IconButton(onClick = { viewModel.loadQuotes() }) {
+                    IconButton(onClick = { /* Share functionality */ }) {
                         Icon(
-                            Icons.Default.Refresh,
-                            contentDescription = "Refresh",
-                            tint = Color.White
+                            Icons.Default.Share,
+                            contentDescription = "Share",
+                            tint = HeritageGold
                         )
                     }
                 }
@@ -163,106 +91,53 @@ fun QuotesScreen(
                 .background(
                     Brush.verticalGradient(
                         colors = listOf(
-                            SurfaceBlueLight,
-                            BackgroundWhite
+                            SoftGray,
+                            PureWhite,
+                            SoftGray
                         )
                     )
                 )
                 .padding(padding)
         ) {
-            when {
-                isLoading -> {
+            // Decorative background
+            DecorativeBibleBackground()
+
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                AnimatedVisibility(
+                    visible = visible,
+                    enter = fadeIn(animationSpec = tween(800)) + scaleIn(
+                        initialScale = 0.9f,
+                        animationSpec = tween(600, easing = EaseOutBack)
+                    )
+                ) {
                     Column(
-                        modifier = Modifier.align(Alignment.Center),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        CircularProgressIndicator(
-                            color = PrimaryBlue,
-                            strokeWidth = 3.dp
-                        )
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Text(
-                            "Loading inspiration...",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = TextSecondary,
-                            fontWeight = FontWeight.Medium
-                        )
-                    }
-                }
-                filteredQuotes.isEmpty() -> {
-                    EmptyQuotesState(
-                        modifier = Modifier.align(Alignment.Center),
-                        onRefresh = { viewModel.loadQuotes() }
-                    )
-                }
-                else -> {
-                    Column(
-                        modifier = Modifier.fillMaxSize()
-                    ) {
-                        // Category Filter
-                        if (categories.size > 1) {
-                            Surface(
-                                modifier = Modifier.fillMaxWidth(),
-                                color = Color.White,
-                                shadowElevation = 2.dp
-                            ) {
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(horizontal = 16.dp, vertical = 12.dp),
-                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                                ) {
-                                    categories.forEach { category ->
-                                        FilterChip(
-                                            selected = category == selectedCategory,
-                                            onClick = { viewModel.selectCategory(category) },
-                                            label = {
-                                                Text(
-                                                    category.replaceFirstChar { it.uppercase() },
-                                                    fontWeight = if (category == selectedCategory)
-                                                        FontWeight.Bold else FontWeight.Normal
-                                                )
-                                            },
-                                            colors = FilterChipDefaults.filterChipColors(
-                                                selectedContainerColor = PrimaryBlue,
-                                                selectedLabelColor = Color.White,
-                                                containerColor = SurfaceBlueLight,
-                                                labelColor = PrimaryBlue
-                                            )
-                                        )
-                                    }
-                                }
+                        // Date Header
+                        DateHeader(
+                            englishDate = dateFormat.format(calendar.time),
+                            malayalamDay = try {
+                                malayalamDateFormat.format(calendar.time)
+                            } catch (e: Exception) {
+                                dateFormat.format(calendar.time)
                             }
-                        }
+                        )
 
-                        // Quote Pager
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .weight(1f)
-                        ) {
-                            HorizontalPager(
-                                state = pagerState,
-                                modifier = Modifier.fillMaxSize()
-                            ) { page ->
-                                QuoteCard(
-                                    quote = filteredQuotes[page],
-                                    currentPage = page + 1,
-                                    totalPages = filteredQuotes.size
-                                )
-                            }
-                        }
+                        Spacer(modifier = Modifier.height(32.dp))
 
-                        // Page Indicator
-                        if (filteredQuotes.size > 1) {
-                            PageIndicator(
-                                currentPage = pagerState.currentPage,
-                                totalPages = filteredQuotes.size,
-                                modifier = Modifier
-                                    .align(Alignment.CenterHorizontally)
-                                    .padding(16.dp)
-                            )
-                        }
+                        // Bible Icon with Animation
+                        BibleIcon()
+
+                        Spacer(modifier = Modifier.height(32.dp))
+
+                        // Quote Card
+                        QuoteCard(quote = todayQuote)
                     }
                 }
             }
@@ -271,236 +146,367 @@ fun QuotesScreen(
 }
 
 @Composable
-fun QuoteCard(
-    quote: Quote,
-    currentPage: Int,
-    totalPages: Int
+fun DateHeader(
+    englishDate: String,
+    malayalamDay: String
 ) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = PureWhite
+        ),
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(6.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    Brush.horizontalGradient(
+                        colors = listOf(
+                            DeepRoyalBlue,
+                            RoyalBlueLight
+                        )
+                    )
+                )
+                .padding(20.dp)
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Icon(
+                        Icons.Default.CalendarToday,
+                        contentDescription = null,
+                        tint = HeritageGold,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "ഇന്നത്തെ ദിനം",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = PureWhite,
+                        letterSpacing = 1.sp
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = englishDate,
+                    fontSize = 15.sp,
+                    color = PureWhite.copy(alpha = 0.95f),
+                    textAlign = TextAlign.Center
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun BibleIcon() {
+    val infiniteTransition = rememberInfiniteTransition(label = "bible_glow")
+
+    val glowAlpha by infiniteTransition.animateFloat(
+        initialValue = 0.3f,
+        targetValue = 0.6f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(2000, easing = EaseInOut),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "glow"
+    )
+
+    val rotation by infiniteTransition.animateFloat(
+        initialValue = -2f,
+        targetValue = 2f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(3000, easing = EaseInOut),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "rotation"
+    )
+
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(24.dp),
         contentAlignment = Alignment.Center
     ) {
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(
-                containerColor = Color.White
-            ),
-            shape = RoundedCornerShape(28.dp),
-            elevation = CardDefaults.cardElevation(8.dp)
+        // Glow effect
+        Box(
+            modifier = Modifier
+                .size(100.dp)
+                .background(
+                    HeritageGold.copy(alpha = glowAlpha),
+                    CircleShape
+                )
+                .blur(20.dp)
+        )
+
+        // Bible icon
+        Surface(
+            shape = RoundedCornerShape(12.dp),
+            color = DeepRoyalBlue,
+            shadowElevation = 12.dp,
+            modifier = Modifier
+                .size(80.dp)
+                .rotate(rotation)
         ) {
             Box(
+                contentAlignment = Alignment.Center,
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .fillMaxSize()
                     .background(
                         Brush.verticalGradient(
                             colors = listOf(
-                                SurfaceBlueLight.copy(alpha = 0.4f),
-                                Color.White
+                                DeepRoyalBlue,
+                                RoyalBlueLight
                             )
                         )
                     )
             ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(32.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    // Quote Icon
-                    Surface(
-                        shape = CircleShape,
-                        color = PrimaryBlue,
-                        modifier = Modifier.size(70.dp)
-                    ) {
-                        Box(contentAlignment = Alignment.Center) {
-                            Icon(
-                                Icons.Default.FormatQuote,
-                                contentDescription = null,
-                                modifier = Modifier.size(36.dp),
-                                tint = Color.White
-                            )
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(28.dp))
-
-                    // Quote Text
-                    Text(
-                        text = "\"${quote.text}\"",
-                        style = MaterialTheme.typography.headlineSmall,
-                        color = TextPrimary,
-                        textAlign = TextAlign.Center,
-                        fontStyle = FontStyle.Italic,
-                        fontWeight = FontWeight.Medium,
-                        lineHeight = MaterialTheme.typography.headlineSmall.lineHeight.times(1.2f)
-                    )
-
-                    Spacer(modifier = Modifier.height(28.dp))
-
-                    // Author Badge
-                    Surface(
-                        shape = RoundedCornerShape(24.dp),
-                        color = PrimaryBlue
-                    ) {
-                        Text(
-                            text = "— ${quote.author}",
-                            style = MaterialTheme.typography.titleMedium,
-                            color = Color.White,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.padding(horizontal = 20.dp, vertical = 10.dp)
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(20.dp))
-
-                    // Category Badge
-                    Surface(
-                        shape = RoundedCornerShape(20.dp),
-                        color = SurfaceBlueLight
-                    ) {
-                        Row(
-                            modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(6.dp)
-                        ) {
-                            Icon(
-                                Icons.Default.Category,
-                                contentDescription = null,
-                                modifier = Modifier.size(16.dp),
-                                tint = PrimaryBlue
-                            )
-                            Text(
-                                text = quote.category.replaceFirstChar { it.uppercase() },
-                                style = MaterialTheme.typography.labelMedium,
-                                color = PrimaryBlue,
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(28.dp))
-
-                    // Quote Counter
-                    Text(
-                        text = "Quote $currentPage of $totalPages",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = TextSecondary,
-                        fontWeight = FontWeight.Medium
-                    )
-
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    // Swipe Hint
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        Icon(
-                            Icons.Default.SwipeLeft,
-                            contentDescription = null,
-                            modifier = Modifier.size(20.dp),
-                            tint = PrimaryBlue
-                        )
-                        Text(
-                            text = "Swipe for more",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = PrimaryBlue,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Icon(
-                            Icons.Default.SwipeRight,
-                            contentDescription = null,
-                            modifier = Modifier.size(20.dp),
-                            tint = PrimaryBlue
-                        )
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun PageIndicator(
-    currentPage: Int,
-    totalPages: Int,
-    modifier: Modifier = Modifier
-) {
-    Row(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.Center
-    ) {
-        repeat(minOf(totalPages, 10)) { index ->
-            Surface(
-                shape = CircleShape,
-                color = if (currentPage == index)
-                    PrimaryBlue
-                else
-                    BorderBlue,
-                modifier = Modifier
-                    .padding(horizontal = 4.dp)
-                    .size(if (currentPage == index) 12.dp else 8.dp)
-            ) {}
-        }
-    }
-}
-
-@Composable
-fun EmptyQuotesState(
-    modifier: Modifier = Modifier,
-    onRefresh: () -> Unit
-) {
-    Column(
-        modifier = modifier.padding(32.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Surface(
-            shape = CircleShape,
-            color = ErrorRed.copy(alpha = 0.1f),
-            modifier = Modifier.size(120.dp)
-        ) {
-            Box(contentAlignment = Alignment.Center) {
                 Icon(
-                    Icons.Default.ErrorOutline,
-                    contentDescription = null,
-                    modifier = Modifier.size(60.dp),
-                    tint = ErrorRed
+                    Icons.Default.MenuBook,
+                    contentDescription = "Bible",
+                    tint = HeritageGold,
+                    modifier = Modifier.size(40.dp)
                 )
             }
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
-
-        Text(
-            text = "No Quotes Available",
-            style = MaterialTheme.typography.headlineSmall,
-            color = ErrorRed,
-            fontWeight = FontWeight.Bold
+        // Cross overlay
+        Icon(
+            Icons.Default.Add,
+            contentDescription = null,
+            tint = PureWhite,
+            modifier = Modifier
+                .size(30.dp)
+                .offset(y = 2.dp)
         )
+    }
+}
 
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Text(
-            text = "Unable to load inspirational quotes",
-            style = MaterialTheme.typography.bodyMedium,
-            color = TextSecondary
-        )
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        Button(
-            onClick = onRefresh,
-            shape = RoundedCornerShape(24.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = PrimaryBlue,
-                contentColor = Color.White
-            )
+@Composable
+fun QuoteCard(quote: com.example.familydirectory.data.model.BibleQuote) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = PureWhite
+        ),
+        shape = RoundedCornerShape(24.dp),
+        elevation = CardDefaults.cardElevation(8.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    Brush.verticalGradient(
+                        colors = listOf(
+                            DeepRoyalBlue.copy(alpha = 0.05f),
+                            PureWhite
+                        )
+                    )
+                )
         ) {
-            Icon(Icons.Default.Refresh, contentDescription = null)
-            Spacer(modifier = Modifier.width(8.dp))
-            Text("Try Again", fontWeight = FontWeight.Bold)
+            Column(
+                modifier = Modifier.padding(28.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                // Opening quote decoration
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = "❝",
+                        fontSize = 48.sp,
+                        color = HeritageGold,
+                        modifier = Modifier.offset(x = (-8).dp, y = (-12).dp)
+                    )
+
+                    Surface(
+                        shape = CircleShape,
+                        color = DeepRoyalBlue.copy(alpha = 0.1f),
+                        modifier = Modifier.size(40.dp)
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Text(
+                                text = "✟",
+                                fontSize = 24.sp,
+                                color = DeepRoyalBlue
+                            )
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // Malayalam text
+                Text(
+                    text = quote.malayalamText,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = DeepRoyalBlue,
+                    textAlign = TextAlign.Center,
+                    lineHeight = 32.sp,
+                    letterSpacing = 0.3.sp
+                )
+
+                Spacer(modifier = Modifier.height(20.dp))
+
+                // Divider with ornament
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Surface(
+                        modifier = Modifier
+                            .width(50.dp)
+                            .height(2.dp),
+                        color = HeritageGold
+                    ) {}
+
+                    Spacer(modifier = Modifier.width(12.dp))
+
+                    Surface(
+                        shape = CircleShape,
+                        color = HeritageGold,
+                        modifier = Modifier.size(8.dp)
+                    ) {}
+
+                    Spacer(modifier = Modifier.width(12.dp))
+
+                    Surface(
+                        modifier = Modifier
+                            .width(50.dp)
+                            .height(2.dp),
+                        color = HeritageGold
+                    ) {}
+                }
+
+                Spacer(modifier = Modifier.height(20.dp))
+
+                // English text
+                Text(
+                    text = quote.englishText,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Normal,
+                    color = TextDark,
+                    textAlign = TextAlign.Center,
+                    lineHeight = 26.sp,
+                    fontStyle = FontStyle.Italic,
+                    letterSpacing = 0.2.sp
+                )
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                // Reference badge
+                Surface(
+                    shape = RoundedCornerShape(20.dp),
+                    color = Brush.horizontalGradient(
+                        colors = listOf(
+                            DeepRoyalBlue,
+                            RoyalBlueLight
+                        )
+                    ).let { DeepRoyalBlue }
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .background(
+                                Brush.horizontalGradient(
+                                    colors = listOf(
+                                        DeepRoyalBlue,
+                                        RoyalBlueLight
+                                    )
+                                )
+                            )
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(horizontal = 24.dp, vertical = 12.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                text = quote.malayalamReference,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = PureWhite,
+                                letterSpacing = 0.5.sp
+                            )
+                            Text(
+                                text = quote.reference,
+                                fontSize = 13.sp,
+                                color = PureWhite.copy(alpha = 0.9f)
+                            )
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Closing quote decoration
+                Text(
+                    text = "❞",
+                    fontSize = 48.sp,
+                    color = HeritageGold,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentWidth(Alignment.End)
+                        .offset(x = 8.dp, y = (-8).dp)
+                )
+            }
         }
+    }
+}
+
+@Composable
+fun DecorativeBibleBackground() {
+    Canvas(
+        modifier = Modifier
+            .fillMaxSize()
+            .alpha(0.04f)
+    ) {
+        val width = size.width
+        val height = size.height
+
+        // Cross pattern top left
+        drawLine(
+            color = DeepRoyalBlue,
+            start = Offset(100f, 50f),
+            end = Offset(100f, 150f),
+            strokeWidth = 8f
+        )
+        drawLine(
+            color = DeepRoyalBlue,
+            start = Offset(50f, 100f),
+            end = Offset(150f, 100f),
+            strokeWidth = 8f
+        )
+
+        // Dove symbol bottom right
+        val dovePath = Path().apply {
+            moveTo(width - 150f, height - 100f)
+            cubicTo(
+                width - 120f, height - 120f,
+                width - 100f, height - 120f,
+                width - 80f, height - 100f
+            )
+        }
+        drawPath(
+            path = dovePath,
+            color = HeritageGold,
+            style = Stroke(width = 6f)
+        )
+
+        // Decorative circles
+        drawCircle(
+            color = WarmTerracotta,
+            radius = 40f,
+            center = Offset(width - 100f, 150f),
+            style = Stroke(width = 4f)
+        )
     }
 }
