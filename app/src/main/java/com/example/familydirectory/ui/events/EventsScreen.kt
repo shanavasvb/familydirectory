@@ -36,6 +36,30 @@ fun EventsScreen(
 ) {
     val events by viewModel.events.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
+    val deleteStatus by viewModel.deleteStatus.collectAsState()
+
+    // Show delete success/error snackbar
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(deleteStatus) {
+        when (deleteStatus) {
+            is DeleteStatus.Success -> {
+                snackbarHostState.showSnackbar(
+                    message = "Event deleted successfully",
+                    duration = SnackbarDuration.Short
+                )
+                viewModel.resetDeleteStatus()
+            }
+            is DeleteStatus.Error -> {
+                snackbarHostState.showSnackbar(
+                    message = (deleteStatus as DeleteStatus.Error).message,
+                    duration = SnackbarDuration.Long
+                )
+                viewModel.resetDeleteStatus()
+            }
+            else -> {}
+        }
+    }
 
     LaunchedEffect(Unit) {
         viewModel.loadEvents()
@@ -76,7 +100,8 @@ fun EventsScreen(
                 Spacer(modifier = Modifier.width(8.dp))
                 Text("Upload", fontWeight = FontWeight.Bold)
             }
-        }
+        },
+        snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { padding ->
         Box(
             modifier = Modifier
@@ -118,7 +143,9 @@ fun EventsScreen(
                         items(events) { event ->
                             EventCard(
                                 event = event,
-                                onLikeClick = { viewModel.toggleLike(event.id) }
+                                onLikeClick = { viewModel.toggleLike(event.id) },
+                                onDeleteClick = { viewModel.deleteEvent(event.id) },
+                                isDeleting = deleteStatus is DeleteStatus.Deleting
                             )
                         }
 
@@ -136,9 +163,63 @@ fun EventsScreen(
 @Composable
 fun EventCard(
     event: com.example.familydirectory.data.repository.Event,
-    onLikeClick: () -> Unit
+    onLikeClick: () -> Unit,
+    onDeleteClick: () -> Unit,
+    isDeleting: Boolean
 ) {
     var isLiked by remember { mutableStateOf(false) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
+
+    // Delete Confirmation Dialog
+    if (showDeleteDialog) {
+        AlertDialog(
+            onDismissRequest = { showDeleteDialog = false },
+            icon = {
+                Icon(
+                    Icons.Default.Warning,
+                    contentDescription = null,
+                    tint = ErrorRed,
+                    modifier = Modifier.size(48.dp)
+                )
+            },
+            title = {
+                Text(
+                    text = "Delete Event?",
+                    fontWeight = FontWeight.Bold
+                )
+            },
+            text = {
+                Text(
+                    text = "Are you sure you want to delete \"${event.title}\"? This action cannot be undone.",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        onDeleteClick()
+                        showDeleteDialog = false
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = ErrorRed
+                    )
+                ) {
+                    Icon(Icons.Default.Delete, contentDescription = null)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Delete")
+                }
+            },
+            dismissButton = {
+                OutlinedButton(
+                    onClick = { showDeleteDialog = false }
+                ) {
+                    Text("Cancel")
+                }
+            },
+            containerColor = Color.White,
+            shape = RoundedCornerShape(20.dp)
+        )
+    }
 
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -151,12 +232,44 @@ fun EventCard(
         Column {
             // Image Carousel
             if (event.images.isNotEmpty()) {
-                ImageCarousel(
-                    images = event.images.map { it.url },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(280.dp)
-                )
+                Box {
+                    ImageCarousel(
+                        images = event.images.map { it.url },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(280.dp)
+                    )
+
+                    // Delete Button Overlay
+                    Surface(
+                        onClick = { showDeleteDialog = true },
+                        modifier = Modifier
+                            .align(Alignment.TopStart)
+                            .padding(12.dp)
+                            .size(40.dp),
+                        shape = CircleShape,
+                        color = ErrorRed,
+                        shadowElevation = 4.dp,
+                        enabled = !isDeleting
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            if (isDeleting) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(20.dp),
+                                    color = Color.White,
+                                    strokeWidth = 2.dp
+                                )
+                            } else {
+                                Icon(
+                                    Icons.Default.Delete,
+                                    contentDescription = "Delete Event",
+                                    tint = Color.White,
+                                    modifier = Modifier.size(22.dp)
+                                )
+                            }
+                        }
+                    }
+                }
             }
 
             // Event Content

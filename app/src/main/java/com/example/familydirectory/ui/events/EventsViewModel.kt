@@ -1,7 +1,5 @@
 package com.example.familydirectory.ui.events
 
-//EventsViewModel.kt
-
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.familydirectory.data.repository.Event
@@ -21,6 +19,9 @@ class EventsViewModel : ViewModel() {
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
+    private val _deleteStatus = MutableStateFlow<DeleteStatus>(DeleteStatus.Idle)
+    val deleteStatus: StateFlow<DeleteStatus> = _deleteStatus.asStateFlow()
+
     fun loadEvents() {
         viewModelScope.launch {
             _isLoading.value = true
@@ -35,4 +36,30 @@ class EventsViewModel : ViewModel() {
         // TODO: Implement like functionality with Firestore
         // Update likes count in Firestore
     }
+
+    fun deleteEvent(eventId: String) {
+        viewModelScope.launch {
+            _deleteStatus.value = DeleteStatus.Deleting
+            val result = repository.deleteEvent(eventId)
+
+            result.onSuccess {
+                _deleteStatus.value = DeleteStatus.Success
+                // Remove from local list immediately
+                _events.value = _events.value.filter { it.id != eventId }
+            }.onFailure { error ->
+                _deleteStatus.value = DeleteStatus.Error(error.message ?: "Failed to delete event")
+            }
+        }
+    }
+
+    fun resetDeleteStatus() {
+        _deleteStatus.value = DeleteStatus.Idle
+    }
+}
+
+sealed class DeleteStatus {
+    object Idle : DeleteStatus()
+    object Deleting : DeleteStatus()
+    object Success : DeleteStatus()
+    data class Error(val message: String) : DeleteStatus()
 }
