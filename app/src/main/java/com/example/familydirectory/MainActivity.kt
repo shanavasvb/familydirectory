@@ -36,7 +36,6 @@ class MainActivity : ComponentActivity() {
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
                     bottomBar = {
-                        // Only show bottom navigation on main screens
                         if (currentRoute in screensWithBottomNav) {
                             BottomNavigationBar(navController = navController)
                         }
@@ -44,7 +43,7 @@ class MainActivity : ComponentActivity() {
                 ) { innerPadding ->
                     AppNavigation(
                         navController = navController,
-                        startDestination = Screen.Search.route,
+                        startDestination = Screen.Home.route,
                         modifier = Modifier.padding(innerPadding)
                     )
                 }

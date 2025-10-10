@@ -12,12 +12,14 @@ import com.example.familydirectory.ui.admin.AdminAuthScreen
 import com.example.familydirectory.ui.admin.AdminUploadScreen
 import com.example.familydirectory.ui.detail.FamilyDetailScreen
 import com.example.familydirectory.ui.events.EventsScreen
+import com.example.familydirectory.ui.home.HomeScreen
 import com.example.familydirectory.ui.quotes.QuotesScreen
 import com.example.familydirectory.ui.search.SearchScreen
 import com.example.familydirectory.ui.upload.UploadEventScreen
 
 // Navigation Routes
 sealed class Screen(val route: String) {
+    object Home : Screen("home")
     object Quotes : Screen("quotes")
     object Search : Screen("search")
     object Events : Screen("events")
@@ -32,7 +34,7 @@ sealed class Screen(val route: String) {
 @Composable
 fun AppNavigation(
     navController: NavHostController = rememberNavController(),
-    startDestination: String = Screen.Search.route,
+    startDestination: String = Screen.Home.route,
     modifier: Modifier = Modifier
 ) {
     NavHost(
@@ -40,7 +42,18 @@ fun AppNavigation(
         startDestination = startDestination,
         modifier = modifier
     ) {
-        // Quotes Screen (Home)
+        // Home Screen (Malayalam Welcome Page)
+        composable(Screen.Home.route) {
+            HomeScreen(
+                onNavigateToDirectory = {
+                    navController.navigate(Screen.Search.route) {
+                        popUpTo(Screen.Home.route) { inclusive = false }
+                    }
+                }
+            )
+        }
+
+        // Quotes Screen
         composable(Screen.Quotes.route) {
             QuotesScreen()
         }
