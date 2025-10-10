@@ -58,6 +58,8 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation("com.google.code.gson:gson:2.10.1")
+
 
     // Add Navigation
     implementation("androidx.navigation:navigation-compose:2.7.7")
