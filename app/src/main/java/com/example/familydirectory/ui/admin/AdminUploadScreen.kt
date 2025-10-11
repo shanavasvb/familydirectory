@@ -67,7 +67,8 @@ fun AdminUploadScreen(
                 contentColor = DeepRoyalBlue,
                 indicator = { tabPositions ->
                     TabRowDefaults.SecondaryIndicator(
-                        modifier = Modifier.tabIndicatorOffset(tabPositions[selectedTab]),
+                        modifier = Modifier.
+                        tabIndicatorOffset(tabPositions[selectedTab]),
                         color = HeritageGold,
                         height = 3.dp
                     )

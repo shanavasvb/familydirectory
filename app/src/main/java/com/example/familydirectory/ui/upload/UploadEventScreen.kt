@@ -95,7 +95,7 @@ fun UploadEventScreen(
                                 selectedImages.isNotEmpty(),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = HeritageGold,
-                            contentColor = DeepRoyalBlue,
+                            contentColor = PureWhite,
                             disabledContainerColor = PureWhite.copy(alpha = 0.3f),
                             disabledContentColor = PureWhite.copy(alpha = 0.5f)
                         ),

@@ -190,7 +190,7 @@ fun PhoneActionDialog(
             Button(
                 onClick = onCall,
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = DeepRoyalBlue
+                    containerColor = PureWhite
                 ),
                 shape = RoundedCornerShape(12.dp)
             ) {
@@ -203,7 +203,7 @@ fun PhoneActionDialog(
             OutlinedButton(
                 onClick = onSms,
                 colors = ButtonDefaults.outlinedButtonColors(
-                    contentColor = DeepRoyalBlue
+                    contentColor = PureWhite
                 ),
                 shape = RoundedCornerShape(12.dp),
                 border = androidx.compose.foundation.BorderStroke(1.dp, DeepRoyalBlue)
