@@ -1,4 +1,4 @@
-# 🏛️ മാളികുടി കുടുംബയോഗം | Malikudy Kudumbayogam Family Directory
+# 🏛️  Family Directory
 
 <div align="center">
 
