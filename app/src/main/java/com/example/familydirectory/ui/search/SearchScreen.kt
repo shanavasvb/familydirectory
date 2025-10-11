@@ -19,6 +19,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -39,6 +40,14 @@ fun SearchScreen(
     val error by viewModel.error.collectAsState()
     val showFilterSheet by viewModel.showFilterSheet.collectAsState()
     val filters by viewModel.filters.collectAsState()
+
+    // ✅ State for refresh animation
+    var isRefreshing by remember { mutableStateOf(false) }
+    val rotation by animateFloatAsState(
+        targetValue = if (isRefreshing) 360f else 0f,
+        animationSpec = tween(durationMillis = 600, easing = LinearEasing),
+        finishedListener = { isRefreshing = false }
+    )
 
     val hasActiveFilters = filters.parish != null ||
             filters.region != null ||
@@ -67,6 +76,23 @@ fun SearchScreen(
                     containerColor = DeepRoyalBlue
                 ),
                 actions = {
+                    // ✅ Refresh Button with Animation
+                    IconButton(
+                        onClick = {
+                            isRefreshing = true
+                            viewModel.refreshFilterOptions()
+                        }
+                    ) {
+                        Icon(
+                            Icons.Default.Refresh,
+                            "Refresh Filters",
+                            tint = PureWhite,
+                            modifier = Modifier.graphicsLayer {
+                                rotationZ = rotation
+                            }
+                        )
+                    }
+
                     // Admin Button
                     IconButton(onClick = onAdminClick) {
                         Icon(
@@ -212,6 +238,47 @@ fun SearchScreen(
                             SearchResultsList(
                                 results = searchResults,
                                 onFamilyClick = onFamilyClick
+                            )
+                        }
+                    }
+                }
+            }
+
+            // ✅ Refresh Snackbar
+            AnimatedVisibility(
+                visible = isRefreshing,
+                enter = slideInVertically(initialOffsetY = { it }) + fadeIn(),
+                exit = slideOutVertically(targetOffsetY = { it }) + fadeOut(),
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(16.dp)
+            ) {
+                Surface(
+                    shape = RoundedCornerShape(16.dp),
+                    color = DeepRoyalBlue,
+                    shadowElevation = 8.dp
+                ) {
+                    Row(
+                        modifier = Modifier.padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(20.dp),
+                            color = PureWhite,
+                            strokeWidth = 2.dp
+                        )
+                        Column {
+                            Text(
+                                text = "ഫിൽട്ടറുകൾ പുതുക്കുന്നു...",
+                                color = PureWhite,
+                                fontWeight = FontWeight.Medium,
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                            Text(
+                                text = "Refreshing filter options",
+                                color = PureWhite.copy(alpha = 0.8f),
+                                style = MaterialTheme.typography.bodySmall
                             )
                         }
                     }

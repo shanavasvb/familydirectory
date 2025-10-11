@@ -1,74 +1,81 @@
 package com.example.familydirectory.ui.search
 
-// SearchViewModel.kt
-
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.familydirectory.data.model.SearchFilters
 import com.example.familydirectory.data.model.SearchResult
 import com.example.familydirectory.data.repository.FamilyRepository
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
-@OptIn(FlowPreview::class)
 class SearchViewModel : ViewModel() {
-
     private val repository = FamilyRepository()
 
-    // Search query text
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
 
-    // Search results
     private val _searchResults = MutableStateFlow<List<SearchResult>>(emptyList())
     val searchResults: StateFlow<List<SearchResult>> = _searchResults.asStateFlow()
 
-    // Loading state
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
-    // Error state
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error.asStateFlow()
 
-    // Filters
     private val _filters = MutableStateFlow(SearchFilters())
     val filters: StateFlow<SearchFilters> = _filters.asStateFlow()
 
-    // Filter options from Firestore
+    private val _showFilterSheet = MutableStateFlow(false)
+    val showFilterSheet: StateFlow<Boolean> = _showFilterSheet.asStateFlow()
+
+    // ✅ Dynamic filter options from Firebase
     private val _availableParishes = MutableStateFlow<List<String>>(emptyList())
     val availableParishes: StateFlow<List<String>> = _availableParishes.asStateFlow()
 
     private val _availableRegions = MutableStateFlow<List<String>>(emptyList())
     val availableRegions: StateFlow<List<String>> = _availableRegions.asStateFlow()
 
-    // Show filter sheet
-    private val _showFilterSheet = MutableStateFlow(false)
-    val showFilterSheet: StateFlow<Boolean> = _showFilterSheet.asStateFlow()
+    private val _isLoadingFilters = MutableStateFlow(false)
+    val isLoadingFilters: StateFlow<Boolean> = _isLoadingFilters.asStateFlow()
 
     init {
-        // Load filter options
+        // Load available filter options when ViewModel is created
         loadFilterOptions()
+    }
 
-        // Debounced search - wait 300ms after user stops typing
+    /**
+     * Load unique parishes and regions from Firebase - IMPROVED
+     */
+    private fun loadFilterOptions() {
         viewModelScope.launch {
-            searchQuery
-                .debounce(300)
-                .distinctUntilChanged()
-                .collectLatest { query ->
-                    if (query.isNotBlank()) {
-                        performSearch(query, filters.value)
-                    } else {
-                        _searchResults.value = emptyList()
-                    }
-                }
+            _isLoadingFilters.value = true
+            try {
+                // Use the new dedicated functions
+                val parishes = repository.getAvailableParishes()
+                val regions = repository.getAvailableRegions()
+
+                println("DEBUG: Loaded ${parishes.size} unique parishes")
+                println("DEBUG: Parishes: $parishes")
+                println("DEBUG: Loaded ${regions.size} unique regions")
+                println("DEBUG: Regions: $regions")
+
+                _availableParishes.value = parishes
+                _availableRegions.value = regions
+
+            } catch (e: Exception) {
+                println("DEBUG: Error loading filter options: ${e.message}")
+                _availableParishes.value = emptyList()
+                _availableRegions.value = emptyList()
+            } finally {
+                _isLoadingFilters.value = false
+            }
         }
     }
 
     fun onSearchQueryChange(query: String) {
         _searchQuery.value = query
-        _error.value = null
+        performSearch()
     }
 
     fun clearSearch() {
@@ -79,16 +86,12 @@ class SearchViewModel : ViewModel() {
 
     fun updateFilters(newFilters: SearchFilters) {
         _filters.value = newFilters
-        if (_searchQuery.value.isNotBlank()) {
-            performSearch(_searchQuery.value, newFilters)
-        }
+        performSearch()
     }
 
     fun clearFilters() {
         _filters.value = SearchFilters()
-        if (_searchQuery.value.isNotBlank()) {
-            performSearch(_searchQuery.value, SearchFilters())
-        }
+        performSearch()
     }
 
     fun toggleFilterSheet() {
@@ -99,76 +102,80 @@ class SearchViewModel : ViewModel() {
         _showFilterSheet.value = false
     }
 
-    private fun performSearch(query: String, filters: SearchFilters) {
+    /**
+     * Refresh filter options (call this after adding new families)
+     */
+    fun refreshFilterOptions() {
+        loadFilterOptions()
+    }
+
+    /**
+     * Normalize Firebase data - Call this once from Admin screen
+     */
+    fun normalizeData(onComplete: (Int) -> Unit) {
         viewModelScope.launch {
+            val result = repository.normalizeFirebaseData()
+            result.onSuccess { count ->
+                println("✅ Normalized $count families")
+                loadFilterOptions() // Reload filters after normalization
+                onComplete(count)
+            }.onFailure { e ->
+                println("❌ Normalization failed: ${e.message}")
+                onComplete(0)
+            }
+        }
+    }
+
+    private fun performSearch() {
+        val query = _searchQuery.value
+        val currentFilters = _filters.value
+
+        // Debug logging
+        println("DEBUG: performSearch called")
+        println("DEBUG: query = '$query'")
+        println("DEBUG: parish filter = '${currentFilters.parish}'")
+        println("DEBUG: region filter = '${currentFilters.region}'")
+        println("DEBUG: bloodGroup filter = '${currentFilters.bloodGroup}'")
+        println("DEBUG: gender filter = '${currentFilters.gender}'")
+
+        // Don't search if no query and no filters
+        if (query.isBlank() && !currentFilters.hasActiveFilters()) {
+            _searchResults.value = emptyList()
+            _error.value = null
+            return
+        }
+
+        viewModelScope.launch {
+            _isLoading.value = true
+            _error.value = null
+
             try {
-                _isLoading.value = true
-                _error.value = null
+                val result = repository.searchFamilies(query, currentFilters)
 
-                val result = repository.searchFamilies(query, filters)
+                result.onSuccess { searchResults ->
+                    println("DEBUG: Found ${searchResults.size} results")
+                    _searchResults.value = searchResults
 
-                result.onSuccess { results ->
-                    _searchResults.value = results
-                    if (results.isEmpty()) {
-                        _error.value = "No results found for '$query'"
+                    if (searchResults.isEmpty() && (query.isNotBlank() || currentFilters.hasActiveFilters())) {
+                        _error.value = "കുടുംബങ്ങളൊന്നും കണ്ടെത്തിയില്ല"
                     }
                 }.onFailure { exception ->
-                    _error.value = exception.message ?: "Search failed"
+                    println("DEBUG: Search failed: ${exception.message}")
+                    _error.value = exception.message ?: "തിരയൽ പരാജയപ്പെട്ടു"
                     _searchResults.value = emptyList()
                 }
-
             } catch (e: Exception) {
-                _error.value = e.message ?: "An error occurred"
+                println("DEBUG: Exception in search: ${e.message}")
+                _error.value = e.message ?: "തിരയൽ പരാജയപ്പെട്ടു"
                 _searchResults.value = emptyList()
             } finally {
                 _isLoading.value = false
             }
         }
     }
+}
 
-    private fun loadFilterOptions() {
-        viewModelScope.launch {
-            try {
-                val parishes = repository.getAllParishes()
-                _availableParishes.value = parishes
-
-                val regions = repository.getAllRegions()
-                _availableRegions.value = regions
-            } catch (e: Exception) {
-                // Silently fail - use default filter options
-            }
-        }
-    }
-
-    fun searchByFiltersOnly() {
-        viewModelScope.launch {
-            try {
-                _isLoading.value = true
-                _error.value = null
-
-                val result = repository.searchByFilters(filters.value)
-
-                result.onSuccess { families ->
-                    // Convert to SearchResult format
-                    _searchResults.value = families.map { family ->
-                        SearchResult(
-                            family = family,
-                            matchedIn = "Filter Match",
-                            relevanceScore = 50
-                        )
-                    }
-                    if (families.isEmpty()) {
-                        _error.value = "No families found matching the filters"
-                    }
-                }.onFailure { exception ->
-                    _error.value = exception.message ?: "Search failed"
-                }
-
-            } catch (e: Exception) {
-                _error.value = e.message ?: "An error occurred"
-            } finally {
-                _isLoading.value = false
-            }
-        }
-    }
+// Extension function for SearchFilters
+private fun SearchFilters.hasActiveFilters(): Boolean {
+    return parish != null || region != null || bloodGroup != null || gender != null
 }

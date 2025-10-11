@@ -35,6 +35,13 @@ fun FilterBottomSheet(
     var selectedRegion by remember { mutableStateOf(currentFilters.region) }
     var selectedBloodGroup by remember { mutableStateOf(currentFilters.bloodGroup) }
     var selectedGender by remember { mutableStateOf(currentFilters.gender) }
+    LaunchedEffect(currentFilters) {
+        selectedParish = currentFilters.parish
+        selectedRegion = currentFilters.region
+        selectedBloodGroup = currentFilters.bloodGroup
+        selectedGender = currentFilters.gender
+    }
+
 
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
@@ -114,6 +121,35 @@ fun FilterBottomSheet(
 
             Spacer(modifier = Modifier.height(24.dp))
 
+            // Info card if data is loading
+            if (availableParishes.isEmpty() && availableRegions.isEmpty()) {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = InfoBlue.copy(alpha = 0.1f)
+                    ),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.padding(12.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(20.dp),
+                            strokeWidth = 2.dp,
+                            color = InfoBlue
+                        )
+                        Text(
+                            text = "ഫിൽട്ടർ ഓപ്ഷനുകൾ ലോഡ് ചെയ്യുന്നു...",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = InfoBlue
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+
             // Scrollable filters
             Column(
                 modifier = Modifier
@@ -122,7 +158,7 @@ fun FilterBottomSheet(
                     .verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(20.dp)
             ) {
-                // Parish Filter
+                // Parish Filter - ✅ DYNAMIC from Firebase
                 FilterSection(
                     title = "ഇടവക",
                     subtitle = "Parish",
@@ -131,13 +167,15 @@ fun FilterBottomSheet(
                     options = if (availableParishes.isNotEmpty())
                         availableParishes
                     else
-                        FilterOptions.parishes,
-                    onValueChange = { selectedParish = it }
+                        FilterOptions.parishes, // Fallback to static
+                    onValueChange = { selectedParish = it },
+                    showCount = availableParishes.isNotEmpty(),
+                    count = availableParishes.size
                 )
 
                 HorizontalDivider(color = LightBorder)
 
-                // Region Filter
+                // Region Filter - ✅ DYNAMIC from Firebase
                 FilterSection(
                     title = "പ്രദേശം",
                     subtitle = "Region",
@@ -146,13 +184,15 @@ fun FilterBottomSheet(
                     options = if (availableRegions.isNotEmpty())
                         availableRegions
                     else
-                        FilterOptions.regions,
-                    onValueChange = { selectedRegion = it }
+                        FilterOptions.regions, // Fallback to static
+                    onValueChange = { selectedRegion = it },
+                    showCount = availableRegions.isNotEmpty(),
+                    count = availableRegions.size
                 )
 
                 HorizontalDivider(color = LightBorder)
 
-                // Blood Group Filter
+                // Blood Group Filter - Static (doesn't need to grow)
                 FilterSection(
                     title = "രക്തഗ്രൂപ്പ്",
                     subtitle = "Blood Group",
@@ -164,7 +204,7 @@ fun FilterBottomSheet(
 
                 HorizontalDivider(color = LightBorder)
 
-                // Gender Filter
+                // Gender Filter - Static
                 FilterSection(
                     title = "ലിംഗം",
                     subtitle = "Gender",
@@ -248,7 +288,9 @@ fun FilterSection(
     icon: androidx.compose.ui.graphics.vector.ImageVector,
     selectedValue: String?,
     options: List<String>,
-    onValueChange: (String?) -> Unit
+    onValueChange: (String?) -> Unit,
+    showCount: Boolean = false,
+    count: Int = 0
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -274,18 +316,37 @@ fun FilterSection(
                     )
                 }
             }
-            Column {
+            Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = title,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = TextDark
                 )
-                Text(
-                    text = subtitle,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = TextSecondary
-                )
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = subtitle,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = TextSecondary
+                    )
+                    if (showCount && count > 0) {
+                        Surface(
+                            shape = RoundedCornerShape(8.dp),
+                            color = DeepRoyalBlue.copy(alpha = 0.1f)
+                        ) {
+                            Text(
+                                text = "$count options",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = DeepRoyalBlue,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                            )
+                        }
+                    }
+                }
             }
         }
 

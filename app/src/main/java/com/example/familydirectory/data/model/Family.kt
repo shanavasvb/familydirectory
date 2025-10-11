@@ -59,47 +59,39 @@ data class SearchResult(
     val relevanceScore: Int = 0
 )
 
-// Common filter values
+
 object FilterOptions {
     val parishes = listOf(
-        "St.Mary's Jacobite Cheengeri",
-        "St.George Orthodox Church",
-        "Mar Thoma Church",
-        // Add more parishes
-    )
+        "St. Mary's Orthodox Church, Kuruppampady",
+        "St. Mary's Jacobite Church, Cheengeri",
+        "St. Thomas Malankara Catholic Church, Kolagappara",
+        "St. Mary's Malankara Catholic Church, Kallichal",
+        "Saron Fellowship Church, Pulluvazhy",
+        "Mar Gregorious Church, Iringole"
+    ).sorted()
 
     val regions = listOf(
+        "മാത്താംപാട്ട",
         "Kumbleri",
-        "Meenangadi",
-        "Meppadi",
-        // Add more regions
-    )
+        "Nilgiri",
+        "Valiyaveedu",
+        "Elanthuruthy"
+    ).sorted()
 
     val bloodGroups = listOf(
         "A positive (A+)",
         "A negative (A-)",
         "B positive (B+)",
         "B negative (B-)",
-        "O positive (O+)",
-        "O negative (O-)",
         "AB positive (AB+)",
-        "AB negative (AB-)"
+        "AB negative (AB-)",
+        "O positive (O+)",
+        "O negative (O-)"
     )
 
-    val genders = listOf("Male", "Female")
-
-    val relations = listOf(
-        "Wife",
-        "Husband",
-        "Son",
-        "Daughter",
-        "Father",
-        "Mother",
-        "Brother",
-        "Sister",
-        "Grandfather",
-        "Grandmother",
-        "Grandson",
-        "Granddaughter"
+    val genders = listOf(
+        "Male",
+        "Female"
     )
+
 }
