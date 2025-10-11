@@ -1,7 +1,3 @@
-
----
-
-```markdown
 # 🏛️ മാളികുടി കുടുംബയോഗം | Malikudy Kudumbayogam Family Directory
 
 <div align="center">
@@ -25,8 +21,8 @@
 - [About The Project](#-about-the-project)
 - [Features](#-features)
 - [Screenshots](#-screenshots)
-- [Technology Stack](#-technology-stack)
-- [Architecture](#-architecture)
+- [Technology Stack](#️-technology-stack)
+- [Architecture](#️-architecture)
 - [Getting Started](#-getting-started)
 - [Project Structure](#-project-structure)
 - [Firebase Configuration](#-firebase-configuration)
@@ -34,7 +30,7 @@
 - [Usage Guide](#-usage-guide)
 - [Admin Features](#-admin-features)
 - [Data Structure](#-data-structure)
-- [Roadmap](#-roadmap)
+- [Roadmap](#️-roadmap)
 - [Contributing](#-contributing)
 - [License](#-license)
 - [Contact](#-contact)
@@ -65,20 +61,21 @@ The app serves families across:
 
 ## ✨ Features
 
-### 🔍 **Smart Search & Filter**
+### 🔍 Smart Search & Filter
 
 - **Advanced Search**: Search by name, place, phone number, email, parish, region
 - **Dynamic Filters**: Filter by:
-  - 🏛️ Parish/Church (6+ parishes supported)
+  - 🏛️ Parish/Church (dynamically loaded from Firebase)
   - 📍 Region (Kumbleri, Nilgiri, Valiyaveedu, Elanthuruthy, മാത്താംപാട്ട)
   - 🩸 Blood Group (A+, A-, B+, B-, AB+, AB-, O+, O-)
   - 👥 Gender (Male/Female)
 - **Real-time Results**: Instant search results with highlighted matches
 - **Filter Combinations**: Apply multiple filters simultaneously
+- **Case-Insensitive Matching**: Flexible search that handles variations in data
 
-### 👨‍👩‍👧‍👦 **Family Details**
+### 👨‍👩‍👧‍👦 Family Details
 
-- **Complete Family Tree**: Head of family and all members
+- **Complete Family Information**: Head of family and all members
 - **Detailed Information**:
   - Name, Relation, Date of Birth
   - Education, Occupation, Institution
@@ -89,7 +86,7 @@ The app serves families across:
 - **Family Member Cards**: Beautiful UI showing all family members
 - **Spouse Details**: Track marriage connections between families
 
-### 📸 **Event Gallery**
+### 📸 Event Gallery
 
 - **Community Events**: Upload and view family gatherings, celebrations
 - **Photo Gallery**: Beautiful grid layout for event photos
@@ -97,7 +94,7 @@ The app serves families across:
 - **Image Upload**: Admin can upload multiple photos per event
 - **Cloud Storage**: Images hosted on Cloudinary for fast loading
 
-### 🔐 **Admin Panel**
+### 🔐 Admin Panel
 
 - **Secure Login**: Password-protected admin access
 - **Data Management**:
@@ -109,9 +106,9 @@ The app serves families across:
   - 📝 Form-based entry (user-friendly)
   - 💻 JSON bulk upload (advanced)
 - **Data Validation**: Ensures data integrity
-- **Offline Capable**: Changes sync when connected
+- **Filter Refresh**: Manual refresh button to update dynamic filter options
 
-### 🎨 **Beautiful UI/UX**
+### 🎨 Beautiful UI/UX
 
 - **Material Design 3**: Modern, intuitive interface
 - **Kerala Theme Colors**:
@@ -119,17 +116,16 @@ The app serves families across:
   - 🟡 Heritage Gold (accent)
   - 🟠 Warm Terracotta (secondary)
 - **Bilingual Support**: Malayalam and English throughout
-- **Dark Mode Ready**: Optimized color schemes
 - **Smooth Animations**: Polished transitions and interactions
 - **Responsive Design**: Works on all screen sizes
+- **Loading States**: Clear feedback during operations
 
-### 🚀 **Performance & Optimization**
+### 🚀 Performance & Optimization
 
 - **Fast Loading**: Optimized Firebase queries
 - **Efficient Caching**: Smart data caching with Coil
 - **Low Memory Usage**: Efficient image loading
-- **Small APK Size**: Only 16MB for full app
-- **Offline Support**: View cached data without internet
+- **Small APK Size**: Approximately 16MB
 - **Background Sync**: Automatic data updates
 
 ---
@@ -152,28 +148,27 @@ The app serves families across:
 
 ## 🛠️ Technology Stack
 
-### **Frontend**
-- ![Kotlin](https://img.shields.io/badge/Kotlin-1.9.0-7F52FF?logo=kotlin)
-- ![Jetpack Compose](https://img.shields.io/badge/Jetpack_Compose-1.5.1-4285F4?logo=jetpack-compose)
-- ![Material 3](https://img.shields.io/badge/Material_Design_3-Latest-757575?logo=material-design)
+### Frontend
+- ![Kotlin](https://img.shields.io/badge/Kotlin-1.9.0-7F52FF?logo=kotlin) - Primary programming language
+- ![Jetpack Compose](https://img.shields.io/badge/Jetpack_Compose-1.5.1-4285F4?logo=jetpack-compose) - Modern UI toolkit
+- ![Material 3](https://img.shields.io/badge/Material_Design_3-Latest-757575?logo=material-design) - Design system
 
-### **Backend & Database**
-- ![Firebase](https://img.shields.io/badge/Firebase_Firestore-FFCA28?logo=firebase)
-- ![Firebase Auth](https://img.shields.io/badge/Firebase_Auth-FFCA28?logo=firebase)
+### Backend & Database
+- ![Firebase](https://img.shields.io/badge/Firebase_Firestore-FFCA28?logo=firebase) - NoSQL cloud database
+- ![Firebase Auth](https://img.shields.io/badge/Firebase_Auth-FFCA28?logo=firebase) - Authentication
 
-### **Image Handling**
-- ![Cloudinary](https://img.shields.io/badge/Cloudinary-3448C5?logo=cloudinary)
-- ![Coil](https://img.shields.io/badge/Coil-Image_Loading-blue)
+### Image Handling
+- ![Cloudinary](https://img.shields.io/badge/Cloudinary-3448C5?logo=cloudinary) - Image hosting & optimization
+- ![Coil](https://img.shields.io/badge/Coil-Image_Loading-blue) - Async image loading
 
-### **Architecture & Libraries**
-- ![MVVM](https://img.shields.io/badge/Architecture-MVVM-green)
-- ![Coroutines](https://img.shields.io/badge/Coroutines-1.9.0-orange?logo=kotlin)
-- ![Flow](https://img.shields.io/badge/StateFlow-Reactive-purple)
-- ![Navigation](https://img.shields.io/badge/Navigation-Compose-blue)
-- ![ViewModel](https://img.shields.io/badge/ViewModel-Lifecycle-green)
-- ![DataStore](https://img.shields.io/badge/DataStore-Preferences-yellow)
+### Architecture & Libraries
+- ![MVVM](https://img.shields.io/badge/Architecture-MVVM-green) - Design pattern
+- ![Coroutines](https://img.shields.io/badge/Coroutines-1.9.0-orange?logo=kotlin) - Async programming
+- ![Flow](https://img.shields.io/badge/StateFlow-Reactive-purple) - Reactive streams
+- ![Navigation](https://img.shields.io/badge/Navigation-Compose-blue) - Screen navigation
+- ![ViewModel](https://img.shields.io/badge/ViewModel-Lifecycle-green) - UI state management
 
-### **Development Tools**
+### Development Tools
 - ![Android Studio](https://img.shields.io/badge/Android_Studio-Ladybug-3DDC84?logo=android-studio)
 - ![Gradle](https://img.shields.io/badge/Gradle-8.10.2-02303A?logo=gradle)
 - ![Git](https://img.shields.io/badge/Git-Version_Control-F05032?logo=git)
@@ -223,17 +218,15 @@ The app follows **Clean Architecture** principles with **MVVM** pattern:
 │  │   Data Sources   │                                       │
 │  │  • Firebase      │                                       │
 │  │  • Cloudinary    │                                       │
-│  │  • DataStore     │                                       │
 │  └──────────────────┘                                       │
 └──────────────────────────────────────────────────────────────┘
 ```
 
-### **Key Design Patterns**
+### Key Design Patterns
 
 - **MVVM**: Clear separation of UI and business logic
 - **Repository Pattern**: Abstract data sources
 - **Observer Pattern**: StateFlow for reactive UI
-- **Dependency Injection**: Manual DI (can be upgraded to Hilt)
 - **Single Source of Truth**: Firebase as authoritative data source
 
 ---
@@ -271,10 +264,10 @@ The app follows **Clean Architecture** principles with **MVVM** pattern:
 
 4. **Configure Cloudinary (Optional)**
    
-   Update in `app/build.gradle.kts`:
+   Update in `AdminUploadViewModel.kt`:
    ```kotlin
-   buildConfigField("String", "CLOUDINARY_CLOUD_NAME", "\"your_cloud_name\"")
-   buildConfigField("String", "CLOUDINARY_UPLOAD_PRESET", "\"your_preset\"")
+   private val CLOUDINARY_CLOUD_NAME = "your_cloud_name"
+   private val CLOUDINARY_UPLOAD_PRESET = "your_preset"
    ```
 
 5. **Sync Gradle**
@@ -372,19 +365,11 @@ familydirectory/
 └── LICENSE
 ```
 
-### **Key Directories**
-
-- **`data/model/`**: Data classes representing entities
-- **`data/repository/`**: Data access layer, Firebase interactions
-- **`ui/`**: All UI screens and composables
-- **`ui/theme/`**: App theming, colors, typography
-- **`navigation/`**: Navigation graph and routes
-
 ---
 
 ## 🔥 Firebase Configuration
 
-### **Firestore Database Structure**
+### Firestore Database Structure
 
 ```javascript
 families/
@@ -431,7 +416,7 @@ events/
 │   └── createdBy: String
 ```
 
-### **Firestore Rules**
+### Firestore Security Rules
 
 ```javascript
 rules_version = '2';
@@ -451,31 +436,15 @@ service cloud.firestore {
 }
 ```
 
-### **Firebase Authentication**
+### Firebase Authentication
 
-Admin authentication uses Firebase Auth:
-
-```kotlin
-// Configured for password-based login
-// Admin credentials stored securely
-```
-
-### **Cloudinary Configuration**
-
-For image uploads:
-
-```kotlin
-// Cloud name: dqst9rwur
-// Upload preset: family_app_events
-// Auto-optimization enabled
-// Format: Auto (WebP when supported)
-```
+Admin authentication uses Firebase Auth with password-based login. Admin credentials are configured securely.
 
 ---
 
 ## 🔨 Building the App
 
-### **Debug Build (For Testing)**
+### Debug Build (For Testing)
 
 ```bash
 # Clean previous builds
@@ -491,7 +460,7 @@ For image uploads:
 app/build/outputs/apk/debug/app-debug.apk
 ```
 
-### **Release Build (For Distribution)**
+### Release Build (For Distribution)
 
 **Step 1: Generate Keystore (First time only)**
 
@@ -506,31 +475,13 @@ keytool -genkey -v \
 
 **Step 2: Configure Signing**
 
-Update `app/build.gradle.kts`:
+Create `keystore.properties` in project root:
 
-```kotlin
-android {
-    signingConfigs {
-        create("release") {
-            storeFile = file("../malikudy-release-key.jks")
-            storePassword = "your_password"
-            keyAlias = "malikudy"
-            keyPassword = "your_password"
-        }
-    }
-    
-    buildTypes {
-        release {
-            signingConfig = signingConfigs.getByName("release")
-            isMinifyEnabled = true
-            isShrinkResources = true
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
-        }
-    }
-}
+```properties
+storePassword=your_store_password
+keyPassword=your_key_password
+keyAlias=malikudy
+storeFile=../malikudy-release-key.jks
 ```
 
 **Step 3: Build Release APK**
@@ -543,44 +494,13 @@ android {
 app/build/outputs/apk/release/app-release.apk
 ```
 
-### **Build Script**
-
-Create `build.sh`:
-
-```bash
-#!/bin/bash
-
-echo "🚀 Building Malikudy Kudumbayogam App..."
-
-# Get version
-VERSION=$(grep "versionName" app/build.gradle.kts | cut -d'"' -f2)
-
-# Clean and build
-./gradlew clean assembleRelease
-
-if [ -f "app/build/outputs/apk/release/app-release.apk" ]; then
-    SIZE=$(du -h app/build/outputs/apk/release/app-release.apk | cut -f1)
-    
-    echo "✅ Build Successful!"
-    echo "📦 Size: $SIZE"
-    echo "📍 Version: $VERSION"
-    
-    cp app/build/outputs/apk/release/app-release.apk \
-       ~/MalikudyKudumbayogam-v${VERSION}.apk
-    
-    echo "📋 Saved to: ~/MalikudyKudumbayogam-v${VERSION}.apk"
-else
-    echo "❌ Build Failed!"
-fi
-```
-
 ---
 
 ## 📘 Usage Guide
 
-### **For Regular Users**
+### For Regular Users
 
-#### **1. Search for Families**
+#### 1. Search for Families
 
 ```
 Open App → Search Bar → Type name/place/phone
@@ -590,52 +510,41 @@ Open App → Search Bar → Type name/place/phone
 - Highlighted matching terms
 - Shows matched field (name, place, etc.)
 
-#### **2. Apply Filters**
+#### 2. Apply Filters
 
 ```
 Click Filter Icon → Select filters → Apply
 ```
 
 **Available Filters:**
-- **Parish**: 6 churches supported
-- **Region**: 5 regions (including Malayalam)
+- **Parish**: Dynamically loaded from Firebase
+- **Region**: 5 regions including Malayalam
 - **Blood Group**: All 8 types
 - **Gender**: Male/Female
 
-#### **3. View Family Details**
+#### 3. View Family Details
 
 ```
 Search Results → Tap Family Card → View Full Details
 ```
 
-Shows:
-- Family head information
-- All family members
-- Contact details
-- Relationships
-- Spouse connections
+Shows complete family information including all members and relationships.
 
-#### **4. View Events**
+#### 4. View Events
 
 ```
 Bottom Navigation → Events → Browse Gallery
 ```
 
-- View community events
-- See event photos
-- Read descriptions
+### For Administrators
 
-### **For Administrators**
-
-#### **1. Admin Login**
+#### 1. Admin Login
 
 ```
 Search Screen → Admin Icon (Top Right) → Enter Password
 ```
 
-Default admin password configured in Firebase Auth.
-
-#### **2. Add New Family**
+#### 2. Add New Family
 
 **Method A: Form Input**
 ```
@@ -647,7 +556,7 @@ Admin Panel → Add Family → Form Tab → Fill Details → Submit
 Admin Panel → Add Family → JSON Tab → Paste JSON → Upload
 ```
 
-#### **3. Upload Events**
+#### 3. Upload Events
 
 ```
 Admin Panel → Upload Event
@@ -656,56 +565,21 @@ Admin Panel → Upload Event
 → Upload
 ```
 
-**Supported:**
-- Multiple images per event
-- Auto-optimization via Cloudinary
-- Progress indication
-
-#### **4. Data Management**
+#### 4. Refresh Filter Options
 
 ```
-Admin Panel → Manage Data
-→ Edit/Delete families
-→ Normalize data (clean duplicates)
+Search Screen → Refresh Icon → Dynamic filters updated
 ```
 
 ---
 
 ## 🔐 Admin Features
 
-### **Admin Password**
+### Admin Password
 
-Set in `AdminLoginScreen.kt`:
+Set in `AdminLoginScreen.kt`. Consider using Firebase Remote Config for dynamic password management in production.
 
-```kotlin
-private val ADMIN_PASSWORD = "your_secure_password"
-```
-
-**Recommendation**: Use Firebase Remote Config for dynamic password management.
-
-### **Data Normalization**
-
-Standardizes inconsistent data:
-
-```kotlin
-// Normalizes parish names
-"St.Marys Church, Kuruppampady" 
-→ "St. Mary's Orthodox Church, Kuruppampady"
-
-// Infers missing regions
-place = "Iringole", region = "" 
-→ region = "Valiyaveedu"
-```
-
-Run via admin panel or programmatically:
-
-```kotlin
-viewModel.normalizeData { count ->
-    println("Normalized $count families")
-}
-```
-
-### **Bulk Data Upload**
+### Bulk Data Upload
 
 JSON format for family data:
 
@@ -741,7 +615,7 @@ JSON format for family data:
 
 ## 📊 Data Structure
 
-### **Family Model**
+### Family Model
 
 ```kotlin
 data class Family(
@@ -768,7 +642,7 @@ data class Family(
 )
 ```
 
-### **Family Member Model**
+### Family Member Model
 
 ```kotlin
 data class FamilyMember(
@@ -789,64 +663,30 @@ data class FamilyMember(
 )
 ```
 
-### **Event Model**
-
-```kotlin
-data class Event(
-    val id: String = "",
-    val title: String = "",
-    val description: String = "",
-    val imageUrls: List<String> = emptyList(),
-    val createdAt: Timestamp? = null,
-    val createdBy: String = ""
-)
-```
-
-### **Search Filters Model**
-
-```kotlin
-data class SearchFilters(
-    val parish: String? = null,
-    val region: String? = null,
-    val bloodGroup: String? = null,
-    val gender: String? = null
-)
-```
-
 ---
 
 ## 🗺️ Roadmap
 
-### **Version 1.1** (Planned)
+### Version 1.1 (Planned)
 - [ ] Family tree visualization
 - [ ] Export family data to PDF
 - [ ] Birthday notifications
 - [ ] Advanced search with date ranges
-- [ ] Multi-language support (Malayalam, English, Hindi)
+- [ ] Multi-language support
 
-### **Version 1.2** (Planned)
+### Version 1.2 (Planned)
 - [ ] Family chat groups
 - [ ] Event RSVP system
 - [ ] Family photo albums
 - [ ] Anniversary reminders
 - [ ] Family news feed
 
-### **Version 2.0** (Future)
+### Version 2.0 (Future)
 - [ ] Interactive family tree with zoom
 - [ ] DNA/ancestry integration
 - [ ] Historical document storage
-- [ ] Family wiki/encyclopedia
 - [ ] Video interviews archive
 - [ ] Migration maps
-- [ ] Genealogy reports
-
-### **Long-term Vision**
-- [ ] Multi-family federation support
-- [ ] Cross-community connections
-- [ ] Academic research tools
-- [ ] Historical preservation archive
-- [ ] Mobile + Web versions
-- [ ] AI-powered relationship discovery
 
 ---
 
@@ -854,130 +694,28 @@ data class SearchFilters(
 
 Contributions are what make the open-source community amazing! Any contributions you make are **greatly appreciated**.
 
-### **How to Contribute**
+### How to Contribute
 
 1. **Fork the Project**
-   ```bash
-   # Click 'Fork' on GitHub
-   ```
+2. **Create Feature Branch** (`git checkout -b feature/AmazingFeature`)
+3. **Commit Changes** (`git commit -m 'Add: Amazing new feature'`)
+4. **Push to Branch** (`git push origin feature/AmazingFeature`)
+5. **Open Pull Request**
 
-2. **Clone Your Fork**
-   ```bash
-   git clone https://github.com/YOUR_USERNAME/familydirectory.git
-   cd familydirectory
-   ```
-
-3. **Create Feature Branch**
-   ```bash
-   git checkout -b feature/AmazingFeature
-   ```
-
-4. **Make Changes**
-   - Write clean, documented code
-   - Follow Kotlin coding conventions
-   - Test thoroughly
-
-5. **Commit Changes**
-   ```bash
-   git add .
-   git commit -m "Add: Amazing new feature"
-   ```
-
-6. **Push to Branch**
-   ```bash
-   git push origin feature/AmazingFeature
-   ```
-
-7. **Open Pull Request**
-   - Go to GitHub
-   - Click "New Pull Request"
-   - Describe your changes
-
-### **Contribution Guidelines**
+### Contribution Guidelines
 
 - ✅ Follow MVVM architecture
 - ✅ Use Jetpack Compose for UI
 - ✅ Write meaningful commit messages
 - ✅ Add comments for complex logic
 - ✅ Test on multiple devices
-- ✅ Update documentation
 - ✅ Respect bilingual requirements (Malayalam + English)
-
-### **Code Style**
-
-```kotlin
-// Use descriptive names
-val familyMembersList = getFamilyMembers()
-
-// Add documentation
-/**
- * Searches families based on query and filters
- * @param query Search term
- * @param filters Active filters
- * @return Result with list of SearchResult
- */
-suspend fun searchFamilies(query: String, filters: SearchFilters)
-
-// Use proper spacing
-fun example() {
-    // Code here
-}
-```
-
-### **Reporting Bugs**
-
-Found a bug? Please open an issue with:
-
-```markdown
-**Bug Description**
-Clear description of the bug
-
-**Steps to Reproduce**
-1. Go to '...'
-2. Click on '....'
-3. See error
-
-**Expected Behavior**
-What should happen
-
-**Screenshots**
-If applicable
-
-**Device Info**
-- Device: [e.g. Samsung Galaxy S21]
-- OS: [e.g. Android 12]
-- App Version: [e.g. 1.0]
-```
 
 ---
 
 ## 📜 License
 
 Distributed under the MIT License. See `LICENSE` for more information.
-
-```
-MIT License
-
-Copyright (c) 2025 Shanavasvb
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-```
 
 ---
 
@@ -987,27 +725,20 @@ SOFTWARE.
 
 - GitHub: [@shanavasvb](https://github.com/shanavasvb)
 - Email: shanavasvb@example.com
-- LinkedIn: [linkedin.com/in/shanavasvb](https://linkedin.com/in/shanavasvb)
-
-**Project Link**: [https://github.com/shanavasvb/familydirectory](https://github.com/shanavasvb/familydirectory)
-
-**Community**:
-- Report bugs: [GitHub Issues](https://github.com/shanavasvb/familydirectory/issues)
-- Request features: [GitHub Discussions](https://github.com/shanavasvb/familydirectory/discussions)
-- Ask questions: [GitHub Q&A](https://github.com/shanavasvb/familydirectory/discussions/categories/q-a)
+- Project Link: [https://github.com/shanavasvb/familydirectory](https://github.com/shanavasvb/familydirectory)
 
 ---
 
 ## 🙏 Acknowledgments
 
-### **Special Thanks**
+### Special Thanks
 
 - **Malikudy Kudumbayogam Committee** - For vision and support
 - **Family Elders** - For providing historical data and genealogy
 - **Beta Testers** - For valuable feedback
 - **Community Members** - For data contribution
 
-### **Technologies Used**
+### Technologies Used
 
 - [Jetpack Compose](https://developer.android.com/jetpack/compose) - Modern Android UI
 - [Firebase](https://firebase.google.com/) - Backend infrastructure
@@ -1016,35 +747,15 @@ SOFTWARE.
 - [Material Design 3](https://m3.material.io/) - Design system
 - [Kotlin Coroutines](https://kotlinlang.org/docs/coroutines-overview.html) - Async operations
 
-### **Inspiration**
-
-This project was inspired by the need to preserve family heritage and strengthen community bonds in an increasingly digital world.
-
-### **Resources**
-
-- [Android Developer Documentation](https://developer.android.com/)
-- [Kotlin Documentation](https://kotlinlang.org/docs/home.html)
-- [Firebase Documentation](https://firebase.google.com/docs)
-- [Material Design Guidelines](https://material.io/design)
-
 ---
 
 ## 📈 Statistics
 
 ![Repository Size](https://img.shields.io/github/repo-size/shanavasvb/familydirectory)
-![Code Size](https://img.shields.io/github/languages/code-size/shanavasvb/familydirectory)
 ![Last Commit](https://img.shields.io/github/last-commit/shanavasvb/familydirectory)
 ![Issues](https://img.shields.io/github/issues/shanavasvb/familydirectory)
-![Pull Requests](https://img.shields.io/github/issues-pr/shanavasvb/familydirectory)
 ![Stars](https://img.shields.io/github/stars/shanavasvb/familydirectory)
-![Forks](https://img.shields.io/github/forks/shanavasvb/familydirectory)
 ![License](https://img.shields.io/github/license/shanavasvb/familydirectory)
-
----
-
-## 🌟 Star History
-
-[![Star History Chart](https://api.star-history.com/svg?repos=shanavasvb/familydirectory&type=Date)](https://star-history.com/#shanavasvb/familydirectory&Date)
 
 ---
 
@@ -1057,164 +768,3 @@ This project was inspired by the need to preserve family heritage and strengthen
 [⬆ Back to Top](#-മാളികുടി-കുടുംബയോഗം--malikudy-kudumbayogam-family-directory)
 
 </div>
-
----
-
-## 📝 Changelog
-
-### Version 1.0 (October 11, 2025)
-
-**Initial Release** 🎉
-
-**Features:**
-- ✅ Complete family directory (100+ families)
-- ✅ Advanced search and filtering
-- ✅ Family details with all members
-- ✅ Event gallery system
-- ✅ Admin panel for data management
-- ✅ Bilingual UI (Malayalam + English)
-- ✅ Beautiful Material Design 3 interface
-- ✅ Firebase integration
-- ✅ Cloudinary image hosting
-- ✅ Optimized performance
-
-**Coverage:**
-- 12 families documented
-- 6 parishes supported
-- 5 regions covered
-- 3 districts (Ernakulam, Wayanad, Nilgiri)
-- Multiple international locations
-
-**Performance:**
-- APK size: 16 MB
-- Load time: <2 seconds
-- Search speed: Real-time
-- Image loading: Optimized with Coil
-
----
-
-<div align="center">
-
-**Built with passion for preserving family heritage** 🏛️
-
-**Serving the Malikudy community since 2025** 👨‍👩‍👧‍👦
-
-</div>
-```
-
----
-
-## 📁 Additional Files to Create
-
-### **1. LICENSE file**
-
-Create `LICENSE`:
-
-```
-MIT License
-
-Copyright (c) 2025 Shanavasvb
-
-[Full MIT License text as shown above]
-```
-
-### **2. .gitignore**
-
-Create/update `.gitignore`:
-
-```gitignore
-# Built application files
-*.apk
-*.ap_
-*.aab
-
-# Files for the ART/Dalvik VM
-*.dex
-
-# Java class files
-*.class
-
-# Generated files
-bin/
-gen/
-out/
-release/
-
-# Gradle files
-.gradle/
-build/
-
-# Local configuration file (sdk path, etc)
-local.properties
-
-# IntelliJ
-*.iml
-.idea/
-misc.xml
-deploymentTargetDropDown.xml
-render.experimental.xml
-
-# Keystore files
-*.jks
-*.keystore
-
-# Google Services (API keys)
-google-services.json
-
-# OS-specific files
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
-
-# Android Studio
-captures/
-.externalNativeBuild
-.cxx
-*.apk
-output.json
-
-# Signing files
-.signing/
-```
-
-### **3. CONTRIBUTING.md**
-
-Create `CONTRIBUTING.md`:
-
-```markdown
-# Contributing to Malikudy Kudumbayogam Family Directory
-
-Thank you for your interest in contributing! 🎉
-
-[Full contribution guidelines as outlined in the README]
-```
-
-### **4. CODE_OF_CONDUCT.md**
-
-Create `CODE_OF_CONDUCT.md`:
-
-```markdown
-# Code of Conduct
-
-## Our Pledge
-
-We pledge to make participation in our project a harassment-free experience for everyone.
-
-## Our Standards
-
-- Be respectful
-- Be welcoming
-- Be collaborative
-- Focus on what is best for the community
-
-## Enforcement
-
-Report issues to shanavasvb@example.com
-```
-
----
-
