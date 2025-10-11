@@ -18,104 +18,104 @@ import androidx.core.view.WindowCompat
 
 private val LightColorScheme = lightColorScheme(
     // Primary Colors (Deep Blue)
-    primary = PrimaryBlue,
-    onPrimary = Color.White,
-    primaryContainer = SurfaceBlueLight,
-    onPrimaryContainer = PrimaryBlueDark,
+    primary = DeepRoyalBlue,
+    onPrimary = PureWhite,
+    primaryContainer = SoftGray,
+    onPrimaryContainer = DeepRoyalBlue,
 
-    // Secondary Colors (Sky Blue)
-    secondary = SecondaryBlue,
-    onSecondary = Color.White,
-    secondaryContainer = SecondaryBlueLight.copy(alpha = 0.3f),
-    onSecondaryContainer = SecondaryBlueDark,
+    // Secondary Colors
+    secondary = RoyalBlueLight,
+    onSecondary = PureWhite,
+    secondaryContainer = SoftGray,
+    onSecondaryContainer = DeepRoyalBlue,
 
-    // Tertiary Colors (Teal)
-    tertiary = AccentTeal,
-    onTertiary = Color.White,
-    tertiaryContainer = AccentTeal.copy(alpha = 0.2f),
-    onTertiaryContainer = Color(0xFF004D40),
+    // Tertiary Colors (Teal/Terracotta)
+    tertiary = WarmTerracotta,
+    onTertiary = PureWhite,
+    tertiaryContainer = WarmTerracotta.copy(alpha = 0.2f),
+    onTertiaryContainer = WarmTerracotta,
 
     // Background (White)
-    background = BackgroundWhite,
-    onBackground = TextPrimary,
+    background = PureWhite,
+    onBackground = TextDark,
 
-    // Surface (Off-White with blue hint)
-    surface = SurfaceWhite,
-    onSurface = TextPrimary,
-    surfaceVariant = SurfaceBlueLight,
+    // Surface (Off-White)
+    surface = PureWhite,
+    onSurface = TextDark,
+    surfaceVariant = SoftGray,
     onSurfaceVariant = TextSecondary,
 
     // Error Colors
     error = ErrorRed,
-    onError = Color.White,
+    onError = PureWhite,
     errorContainer = ErrorRed.copy(alpha = 0.1f),
     onErrorContainer = ErrorRed,
 
     // Outline
-    outline = BorderBlue,
-    outlineVariant = DividerLight,
+    outline = LightBorder,
+    outlineVariant = LightBorder.copy(alpha = 0.5f),
 
     // Surface Tint
-    surfaceTint = PrimaryBlue,
+    surfaceTint = DeepRoyalBlue,
 
     // Inverse Colors
-    inverseSurface = PrimaryBlueDark,
-    inverseOnSurface = Color.White,
-    inversePrimary = PrimaryBlueLight
+    inverseSurface = DeepRoyalBlue,
+    inverseOnSurface = PureWhite,
+    inversePrimary = HeritageGold
 )
 
 private val DarkColorScheme = darkColorScheme(
     // Primary Colors
-    primary = PrimaryBlueLight,
-    onPrimary = PrimaryBlueDark,
-    primaryContainer = PrimaryBlueDark,
-    onPrimaryContainer = PrimaryBlueLight,
+    primary = RoyalBlueLight,
+    onPrimary = DeepRoyalBlue,
+    primaryContainer = DeepRoyalBlue,
+    onPrimaryContainer = RoyalBlueLight,
 
     // Secondary Colors
-    secondary = SecondaryBlueLight,
-    onSecondary = SecondaryBlueDark,
-    secondaryContainer = SecondaryBlueDark,
-    onSecondaryContainer = SecondaryBlueLight,
+    secondary = RoyalBlueLight,
+    onSecondary = DeepRoyalBlue,
+    secondaryContainer = RoyalBlueDark,
+    onSecondaryContainer = RoyalBlueLight,
 
     // Tertiary Colors
-    tertiary = AccentTeal,
-    onTertiary = Color(0xFF003D33),
-    tertiaryContainer = Color(0xFF005B4F),
-    onTertiaryContainer = AccentTeal.copy(alpha = 0.7f),
+    tertiary = WarmTerracotta,
+    onTertiary = Color(0xFF3D2517),
+    tertiaryContainer = Color(0xFF5B3A27),
+    onTertiaryContainer = WarmTerracotta.copy(alpha = 0.7f),
 
     // Background (Deep Blue, not black)
-    background = Color(0xFF0A1929), // Deep Blue background
-    onBackground = Color(0xFFE3F2FD),
+    background = RoyalBlueDark,
+    onBackground = SoftGray,
 
     // Surface (Dark Blue)
-    surface = Color(0xFF112240), // Dark Blue surface
-    onSurface = Color(0xFFE3F2FD),
+    surface = Color(0xFF112240),
+    onSurface = SoftGray,
     surfaceVariant = Color(0xFF1E3A5F),
-    onSurfaceVariant = Color(0xFFB0BEC5),
+    onSurfaceVariant = TextHint,
 
     // Error Colors
     error = ErrorRed,
-    onError = Color.White,
+    onError = PureWhite,
     errorContainer = ErrorRed.copy(alpha = 0.2f),
     onErrorContainer = ErrorRed.copy(alpha = 0.9f),
 
     // Outline
-    outline = Color(0xFF5472D3),
+    outline = RoyalBlueLight,
     outlineVariant = Color(0xFF1E3A5F),
 
     // Surface Tint
-    surfaceTint = PrimaryBlueLight,
+    surfaceTint = RoyalBlueLight,
 
     // Inverse Colors
-    inverseSurface = Color(0xFFE3F2FD),
-    inverseOnSurface = Color(0xFF0A1929),
-    inversePrimary = PrimaryBlue
+    inverseSurface = SoftGray,
+    inverseOnSurface = RoyalBlueDark,
+    inversePrimary = DeepRoyalBlue
 )
 
 @Composable
 fun FamilydirectoryTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    dynamicColor: Boolean = false, // Set to false to always use custom colors
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
@@ -141,6 +141,7 @@ fun FamilydirectoryTheme(
     MaterialTheme(
         colorScheme = colorScheme,
         typography = Typography,
+        shapes = Shapes,
         content = content
     )
 }

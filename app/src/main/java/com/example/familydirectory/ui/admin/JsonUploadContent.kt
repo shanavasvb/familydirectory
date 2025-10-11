@@ -68,7 +68,7 @@ fun JsonUploadContent(viewModel: AdminUploadViewModel) {
         Card(
             modifier = Modifier.fillMaxWidth(),
             colors = CardDefaults.cardColors(
-                containerColor = SurfaceBlueLight
+                containerColor = SoftGray
             ),
             shape = RoundedCornerShape(16.dp)
         ) {
@@ -79,7 +79,7 @@ fun JsonUploadContent(viewModel: AdminUploadViewModel) {
             ) {
                 Surface(
                     shape = CircleShape,
-                    color = PrimaryBlue,
+                    color = DeepRoyalBlue,
                     modifier = Modifier.size(32.dp)
                 ) {
                     Box(contentAlignment = Alignment.Center) {
@@ -96,7 +96,7 @@ fun JsonUploadContent(viewModel: AdminUploadViewModel) {
                         "JSON Upload Instructions",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
-                        color = PrimaryBlue
+                        color = DeepRoyalBlue
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
@@ -116,9 +116,9 @@ fun JsonUploadContent(viewModel: AdminUploadViewModel) {
             onClick = { jsonText = sampleJson },
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.outlinedButtonColors(
-                contentColor = PrimaryBlue
+                contentColor = DeepRoyalBlue
             ),
-            border = androidx.compose.foundation.BorderStroke(1.dp, PrimaryBlue),
+            border = androidx.compose.foundation.BorderStroke(1.dp, DeepRoyalBlue),
             shape = RoundedCornerShape(12.dp)
         ) {
             Icon(
@@ -146,7 +146,7 @@ fun JsonUploadContent(viewModel: AdminUploadViewModel) {
                 ) {
                     Surface(
                         shape = CircleShape,
-                        color = SurfaceBlueLight,
+                        color = SoftGray,
                         modifier = Modifier.size(32.dp)
                     ) {
                         Box(contentAlignment = Alignment.Center) {
@@ -154,7 +154,7 @@ fun JsonUploadContent(viewModel: AdminUploadViewModel) {
                                 Icons.Default.DataObject,
                                 contentDescription = null,
                                 modifier = Modifier.size(18.dp),
-                                tint = PrimaryBlue
+                                tint = DeepRoyalBlue
                             )
                         }
                     }
@@ -162,7 +162,7 @@ fun JsonUploadContent(viewModel: AdminUploadViewModel) {
                         "JSON Data",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
-                        color = PrimaryBlue
+                        color = DeepRoyalBlue
                     )
                     Spacer(modifier = Modifier.weight(1f))
                     if (jsonText.isNotEmpty()) {
@@ -195,10 +195,10 @@ fun JsonUploadContent(viewModel: AdminUploadViewModel) {
                         )
                     },
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = PrimaryBlue,
-                        unfocusedBorderColor = BorderBlue,
-                        focusedTextColor = TextPrimary,
-                        unfocusedTextColor = TextPrimary
+                        focusedBorderColor = DeepRoyalBlue,
+                        unfocusedBorderColor = LightBorder,
+                        focusedTextColor = TextDark,
+                        unfocusedTextColor = TextDark
                     ),
                     shape = RoundedCornerShape(12.dp),
                     textStyle = MaterialTheme.typography.bodySmall.copy(
@@ -213,7 +213,7 @@ fun JsonUploadContent(viewModel: AdminUploadViewModel) {
             Text(
                 text = "${jsonText.length} characters",
                 style = MaterialTheme.typography.bodySmall,
-                color = TextTertiary,
+                color = TextHint,
                 modifier = Modifier.padding(start = 4.dp)
             )
         }
@@ -228,8 +228,8 @@ fun JsonUploadContent(viewModel: AdminUploadViewModel) {
                 .height(56.dp),
             enabled = jsonText.isNotBlank(),
             colors = ButtonDefaults.buttonColors(
-                containerColor = PrimaryBlue,
-                disabledContainerColor = BorderBlue
+                containerColor = DeepRoyalBlue,
+                disabledContainerColor = LightBorder
             ),
             shape = RoundedCornerShape(16.dp),
             elevation = ButtonDefaults.buttonElevation(4.dp)

@@ -1,6 +1,5 @@
 package com.example.familydirectory.ui.admin
 
-
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -54,23 +53,31 @@ fun AdminAuthScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(
-                        "Admin Login",
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White
-                    )
+                    Column {
+                        Text(
+                            "അഡ്മിൻ ലോഗിൻ",
+                            fontWeight = FontWeight.Bold,
+                            color = PureWhite,
+                            fontSize = MaterialTheme.typography.titleLarge.fontSize
+                        )
+                        Text(
+                            "Admin Login",
+                            fontSize = MaterialTheme.typography.bodySmall.fontSize,
+                            color = PureWhite.copy(alpha = 0.9f)
+                        )
+                    }
                 },
                 navigationIcon = {
                     IconButton(onClick = onDismiss) {
                         Icon(
                             Icons.Default.Close,
                             "Close",
-                            tint = Color.White
+                            tint = PureWhite
                         )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = PrimaryBlue
+                    containerColor = DeepRoyalBlue
                 )
             )
         }
@@ -81,8 +88,9 @@ fun AdminAuthScreen(
                 .background(
                     Brush.verticalGradient(
                         colors = listOf(
-                            SurfaceBlueLight,
-                            BackgroundWhite
+                            SoftGray,
+                            PureWhite,
+                            SoftGray
                         )
                     )
                 )
@@ -95,37 +103,56 @@ fun AdminAuthScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                // Admin Icon
-                Surface(
-                    shape = CircleShape,
-                    color = PrimaryBlue,
-                    modifier = Modifier.size(100.dp)
-                ) {
-                    Box(contentAlignment = Alignment.Center) {
-                        Icon(
-                            Icons.Default.AdminPanelSettings,
-                            contentDescription = null,
-                            modifier = Modifier.size(56.dp),
-                            tint = Color.White
-                        )
+                // Admin Icon with glow
+                Box(contentAlignment = Alignment.Center) {
+                    // Glow effect
+                    Surface(
+                        shape = CircleShape,
+                        color = DeepRoyalBlue.copy(alpha = 0.2f),
+                        modifier = Modifier.size(120.dp)
+                    ) {}
+
+                    // Main icon
+                    Surface(
+                        shape = CircleShape,
+                        color = DeepRoyalBlue,
+                        modifier = Modifier.size(100.dp),
+                        shadowElevation = 8.dp
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Icon(
+                                Icons.Default.AdminPanelSettings,
+                                contentDescription = null,
+                                modifier = Modifier.size(56.dp),
+                                tint = HeritageGold
+                            )
+                        }
                     }
                 }
 
                 Spacer(modifier = Modifier.height(32.dp))
 
                 Text(
-                    text = "Administrator Access",
+                    text = "അഡ്മിനിസ്ട്രേറ്റർ ആക്സസ്",
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold,
-                    color = PrimaryBlue
+                    color = DeepRoyalBlue
+                )
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                Text(
+                    text = "Administrator Access",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = TextSecondary
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
-                    text = "Enter your credentials to continue",
+                    text = "നിങ്ങളുടെ യോഗ്യതാപത്രങ്ങൾ നൽകുക",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = TextSecondary
+                    color = TextHint
                 )
 
                 Spacer(modifier = Modifier.height(32.dp))
@@ -134,37 +161,64 @@ fun AdminAuthScreen(
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     colors = CardDefaults.cardColors(
-                        containerColor = Color.White
+                        containerColor = PureWhite
                     ),
                     shape = RoundedCornerShape(16.dp),
-                    elevation = CardDefaults.cardElevation(3.dp)
+                    elevation = CardDefaults.cardElevation(4.dp)
                 ) {
-                    OutlinedTextField(
-                        value = username,
-                        onValueChange = {
-                            username = it
-                            errorMessage = null
-                        },
-                        label = { Text("Username") },
-                        leadingIcon = {
-                            Icon(
-                                Icons.Default.Person,
-                                contentDescription = null,
-                                tint = PrimaryBlue
-                            )
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        singleLine = true,
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = PrimaryBlue,
-                            unfocusedBorderColor = BorderBlue,
-                            focusedTextColor = TextPrimary,
-                            unfocusedTextColor = TextPrimary
-                        ),
-                        shape = RoundedCornerShape(12.dp)
-                    )
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            modifier = Modifier.padding(bottom = 8.dp)
+                        ) {
+                            Surface(
+                                shape = CircleShape,
+                                color = DeepRoyalBlue.copy(alpha = 0.1f),
+                                modifier = Modifier.size(32.dp)
+                            ) {
+                                Box(contentAlignment = Alignment.Center) {
+                                    Icon(
+                                        Icons.Default.Person,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(18.dp),
+                                        tint = DeepRoyalBlue
+                                    )
+                                }
+                            }
+                            Column {
+                                Text(
+                                    text = "ഉപയോക്തൃനാമം",
+                                    style = MaterialTheme.typography.labelMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    color = DeepRoyalBlue
+                                )
+                                Text(
+                                    text = "Username",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = TextSecondary
+                                )
+                            }
+                        }
+
+                        OutlinedTextField(
+                            value = username,
+                            onValueChange = {
+                                username = it
+                                errorMessage = null
+                            },
+                            placeholder = { Text("Enter username", color = TextHint) },
+                            modifier = Modifier.fillMaxWidth(),
+                            singleLine = true,
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedBorderColor = DeepRoyalBlue,
+                                unfocusedBorderColor = LightBorder,
+                                focusedTextColor = TextDark,
+                                unfocusedTextColor = TextDark
+                            ),
+                            shape = RoundedCornerShape(12.dp)
+                        )
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -173,51 +227,78 @@ fun AdminAuthScreen(
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     colors = CardDefaults.cardColors(
-                        containerColor = Color.White
+                        containerColor = PureWhite
                     ),
                     shape = RoundedCornerShape(16.dp),
-                    elevation = CardDefaults.cardElevation(3.dp)
+                    elevation = CardDefaults.cardElevation(4.dp)
                 ) {
-                    OutlinedTextField(
-                        value = password,
-                        onValueChange = {
-                            password = it
-                            errorMessage = null
-                        },
-                        label = { Text("Password") },
-                        leadingIcon = {
-                            Icon(
-                                Icons.Default.Lock,
-                                contentDescription = null,
-                                tint = PrimaryBlue
-                            )
-                        },
-                        trailingIcon = {
-                            IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                                Icon(
-                                    if (passwordVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility,
-                                    contentDescription = if (passwordVisible) "Hide password" else "Show password",
-                                    tint = TextSecondary
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            modifier = Modifier.padding(bottom = 8.dp)
+                        ) {
+                            Surface(
+                                shape = CircleShape,
+                                color = DeepRoyalBlue.copy(alpha = 0.1f),
+                                modifier = Modifier.size(32.dp)
+                            ) {
+                                Box(contentAlignment = Alignment.Center) {
+                                    Icon(
+                                        Icons.Default.Lock,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(18.dp),
+                                        tint = DeepRoyalBlue
+                                    )
+                                }
+                            }
+                            Column {
+                                Text(
+                                    text = "പാസ്‌വേഡ്",
+                                    style = MaterialTheme.typography.labelMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    color = DeepRoyalBlue
+                                )
+                                Text(
+                                    text = "Password",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = TextSecondary
                                 )
                             }
-                        },
-                        visualTransformation = if (passwordVisible)
-                            VisualTransformation.None
-                        else
-                            PasswordVisualTransformation(),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        singleLine = true,
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = PrimaryBlue,
-                            unfocusedBorderColor = BorderBlue,
-                            focusedTextColor = TextPrimary,
-                            unfocusedTextColor = TextPrimary
-                        ),
-                        shape = RoundedCornerShape(12.dp)
-                    )
+                        }
+
+                        OutlinedTextField(
+                            value = password,
+                            onValueChange = {
+                                password = it
+                                errorMessage = null
+                            },
+                            placeholder = { Text("Enter password", color = TextHint) },
+                            trailingIcon = {
+                                IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                                    Icon(
+                                        if (passwordVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility,
+                                        contentDescription = if (passwordVisible) "Hide password" else "Show password",
+                                        tint = TextSecondary
+                                    )
+                                }
+                            },
+                            visualTransformation = if (passwordVisible)
+                                VisualTransformation.None
+                            else
+                                PasswordVisualTransformation(),
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                            modifier = Modifier.fillMaxWidth(),
+                            singleLine = true,
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedBorderColor = DeepRoyalBlue,
+                                unfocusedBorderColor = LightBorder,
+                                focusedTextColor = TextDark,
+                                unfocusedTextColor = TextDark
+                            ),
+                            shape = RoundedCornerShape(12.dp)
+                        )
+                    }
                 }
 
                 // Error Message
@@ -259,21 +340,27 @@ fun AdminAuthScreen(
                         .fillMaxWidth()
                         .height(56.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = PrimaryBlue
+                        containerColor = DeepRoyalBlue
                     ),
                     shape = RoundedCornerShape(16.dp),
-                    elevation = ButtonDefaults.buttonElevation(4.dp)
+                    elevation = ButtonDefaults.buttonElevation(6.dp)
                 ) {
                     Icon(
                         Icons.Default.Login,
                         contentDescription = null
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        "Login",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
-                    )
+                    Column(horizontalAlignment = Alignment.Start) {
+                        Text(
+                            "പ്രവേശിക്കുക",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            "Login",
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(24.dp))
@@ -281,7 +368,7 @@ fun AdminAuthScreen(
                 // Info Card
                 Surface(
                     shape = RoundedCornerShape(12.dp),
-                    color = SurfaceBlueLight
+                    color = DeepRoyalBlue.copy(alpha = 0.1f)
                 ) {
                     Row(
                         modifier = Modifier.padding(12.dp),
@@ -291,15 +378,22 @@ fun AdminAuthScreen(
                         Icon(
                             Icons.Default.Info,
                             contentDescription = null,
-                            tint = PrimaryBlue,
+                            tint = DeepRoyalBlue,
                             modifier = Modifier.size(20.dp)
                         )
-                        Text(
-                            "Admin access required",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = PrimaryBlue,
-                            fontWeight = FontWeight.Medium
-                        )
+                        Column {
+                            Text(
+                                "അഡ്മിൻ ആക്സസ് ആവശ്യമാണ്",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = DeepRoyalBlue,
+                                fontWeight = FontWeight.Medium
+                            )
+                            Text(
+                                "Admin access required",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = TextSecondary
+                            )
+                        }
                     }
                 }
             }

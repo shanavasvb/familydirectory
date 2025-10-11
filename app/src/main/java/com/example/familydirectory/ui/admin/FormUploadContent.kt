@@ -1,5 +1,6 @@
 package com.example.familydirectory.ui.admin
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -46,7 +47,7 @@ fun FormUploadContent(viewModel: AdminUploadViewModel) {
         Card(
             modifier = Modifier.fillMaxWidth(),
             colors = CardDefaults.cardColors(
-                containerColor = SurfaceBlueLight
+                containerColor = SoftGray
             ),
             shape = RoundedCornerShape(16.dp)
         ) {
@@ -57,7 +58,7 @@ fun FormUploadContent(viewModel: AdminUploadViewModel) {
             ) {
                 Surface(
                     shape = CircleShape,
-                    color = PrimaryBlue,
+                    color = DeepRoyalBlue,
                     modifier = Modifier.size(32.dp)
                 ) {
                     Box(contentAlignment = Alignment.Center) {
@@ -72,7 +73,7 @@ fun FormUploadContent(viewModel: AdminUploadViewModel) {
                 Text(
                     "Fill in family head details below",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = PrimaryBlue,
+                    color = DeepRoyalBlue,
                     fontWeight = FontWeight.Medium
                 )
             }
@@ -255,8 +256,8 @@ fun FormUploadContent(viewModel: AdminUploadViewModel) {
             enabled = familyHead.isNotBlank() && place.isNotBlank() &&
                     parish.isNotBlank() && phone.isNotBlank(),
             colors = ButtonDefaults.buttonColors(
-                containerColor = PrimaryBlue,
-                disabledContainerColor = BorderBlue
+                containerColor = DeepRoyalBlue,
+                disabledContainerColor = LightBorder
             ),
             shape = RoundedCornerShape(16.dp),
             elevation = ButtonDefaults.buttonElevation(4.dp)
@@ -290,7 +291,7 @@ fun SectionHeader(
     ) {
         Surface(
             shape = CircleShape,
-            color = SurfaceBlueLight,
+            color = SoftGray,
             modifier = Modifier.size(36.dp)
         ) {
             Box(contentAlignment = Alignment.Center) {
@@ -298,7 +299,7 @@ fun SectionHeader(
                     imageVector = icon,
                     contentDescription = null,
                     modifier = Modifier.size(20.dp),
-                    tint = PrimaryBlue
+                    tint = DeepRoyalBlue
                 )
             }
         }
@@ -306,10 +307,10 @@ fun SectionHeader(
             text = title,
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
-            color = PrimaryBlue
+            color = DeepRoyalBlue
         )
     }
-    HorizontalDivider(color = DividerLight)
+    HorizontalDivider(color = LightBorder)
 }
 
 @Composable
@@ -329,14 +330,14 @@ fun FormTextField(
         label = {
             Text(
                 if (required) "$label *" else label,
-                color = if (required) PrimaryBlue else TextSecondary
+                color = if (required) DeepRoyalBlue else TextSecondary
             )
         },
         leadingIcon = {
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = PrimaryBlue,
+                tint = DeepRoyalBlue,
                 modifier = Modifier.size(20.dp)
             )
         },
@@ -344,10 +345,10 @@ fun FormTextField(
         singleLine = singleLine,
         maxLines = maxLines,
         colors = OutlinedTextFieldDefaults.colors(
-            focusedBorderColor = PrimaryBlue,
-            unfocusedBorderColor = BorderBlue,
-            focusedTextColor = TextPrimary,
-            unfocusedTextColor = TextPrimary
+            focusedBorderColor = DeepRoyalBlue,
+            unfocusedBorderColor = LightBorder,
+            focusedTextColor = TextDark,
+            unfocusedTextColor = TextDark
         ),
         shape = RoundedCornerShape(12.dp)
     )
@@ -378,14 +379,14 @@ fun FormDropdown(
             label = {
                 Text(
                     if (required) "$label *" else label,
-                    color = if (required) PrimaryBlue else TextSecondary
+                    color = if (required) DeepRoyalBlue else TextSecondary
                 )
             },
             leadingIcon = {
                 Icon(
                     imageVector = icon,
                     contentDescription = null,
-                    tint = PrimaryBlue,
+                    tint = DeepRoyalBlue,
                     modifier = Modifier.size(20.dp)
                 )
             },
@@ -396,10 +397,10 @@ fun FormDropdown(
                 .fillMaxWidth()
                 .menuAnchor(),
             colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = PrimaryBlue,
-                unfocusedBorderColor = BorderBlue,
-                focusedTextColor = TextPrimary,
-                unfocusedTextColor = TextPrimary
+                focusedBorderColor = DeepRoyalBlue,
+                unfocusedBorderColor = LightBorder,
+                focusedTextColor = TextDark,
+                unfocusedTextColor = TextDark
             ),
             shape = RoundedCornerShape(12.dp)
         )
@@ -414,7 +415,7 @@ fun FormDropdown(
                     text = {
                         Text(
                             option,
-                            color = if (value == option) PrimaryBlue else TextPrimary,
+                            color = if (value == option) DeepRoyalBlue else TextDark,
                             fontWeight = if (value == option) FontWeight.Bold else FontWeight.Normal
                         )
                     },
@@ -423,7 +424,7 @@ fun FormDropdown(
                         expanded = false
                     },
                     leadingIcon = if (value == option) {
-                        { Icon(Icons.Default.Check, null, tint = PrimaryBlue) }
+                        { Icon(Icons.Default.Check, null, tint = DeepRoyalBlue) }
                     } else null
                 )
             }

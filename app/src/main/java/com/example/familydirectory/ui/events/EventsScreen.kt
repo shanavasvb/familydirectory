@@ -1,5 +1,7 @@
 package com.example.familydirectory.ui.events
 
+import androidx.compose.animation.*
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -16,6 +18,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -38,14 +41,13 @@ fun EventsScreen(
     val isLoading by viewModel.isLoading.collectAsState()
     val deleteStatus by viewModel.deleteStatus.collectAsState()
 
-    // Show delete success/error snackbar
     val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(deleteStatus) {
         when (deleteStatus) {
             is DeleteStatus.Success -> {
                 snackbarHostState.showSnackbar(
-                    message = "Event deleted successfully",
+                    message = "ഇവന്റ് വിജയകരമായി ഇല്ലാതാക്കി",
                     duration = SnackbarDuration.Short
                 )
                 viewModel.resetDeleteStatus()
@@ -69,21 +71,29 @@ fun EventsScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(
-                        "Events Gallery",
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White
-                    )
+                    Column {
+                        Text(
+                            "ഇവന്റ് ഗാലറി",
+                            fontWeight = FontWeight.Bold,
+                            color = PureWhite,
+                            fontSize = MaterialTheme.typography.titleLarge.fontSize
+                        )
+                        Text(
+                            "Events Gallery",
+                            fontSize = MaterialTheme.typography.bodySmall.fontSize,
+                            color = PureWhite.copy(alpha = 0.9f)
+                        )
+                    }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = PrimaryBlue
+                    containerColor = DeepRoyalBlue
                 ),
                 actions = {
                     IconButton(onClick = { viewModel.loadEvents() }) {
                         Icon(
                             Icons.Default.Refresh,
                             "Refresh",
-                            tint = Color.White
+                            tint = HeritageGold
                         )
                     }
                 }
@@ -92,13 +102,13 @@ fun EventsScreen(
         floatingActionButton = {
             ExtendedFloatingActionButton(
                 onClick = onNavigateToUpload,
-                containerColor = AccentOrange,
-                contentColor = Color.White,
-                elevation = FloatingActionButtonDefaults.elevation(6.dp)
+                containerColor = HeritageGold,
+                contentColor = DeepRoyalBlue,
+                elevation = FloatingActionButtonDefaults.elevation(8.dp),
             ) {
                 Icon(Icons.Default.Add, "Upload Event")
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("Upload", fontWeight = FontWeight.Bold)
+                Text("അപ്‌ലോഡ്", fontWeight = FontWeight.Bold)
             }
         },
         snackbarHost = { SnackbarHost(snackbarHostState) }
@@ -106,9 +116,25 @@ fun EventsScreen(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(BackgroundLight)
+                .background(SoftGray)
                 .padding(padding)
         ) {
+            // Decorative header border
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(4.dp)
+                    .background(
+                        Brush.horizontalGradient(
+                            colors = listOf(
+                                HeritageGold,
+                                WarmTerracotta,
+                                HeritageGold
+                            )
+                        )
+                    )
+            )
+
             when {
                 isLoading -> {
                     Column(
@@ -116,12 +142,12 @@ fun EventsScreen(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         CircularProgressIndicator(
-                            color = PrimaryBlue,
+                            color = DeepRoyalBlue,
                             strokeWidth = 3.dp
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(
-                            "Loading events...",
+                            "ലോഡ് ചെയ്യുന്നു...",
                             style = MaterialTheme.typography.bodyMedium,
                             color = TextSecondary,
                             fontWeight = FontWeight.Medium
@@ -140,7 +166,10 @@ fun EventsScreen(
                         contentPadding = PaddingValues(16.dp),
                         verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
-                        items(events) { event ->
+                        items(
+                            items = events,
+                            key = { it.id }
+                        ) { event ->
                             EventCard(
                                 event = event,
                                 onLikeClick = { viewModel.toggleLike(event.id) },
@@ -149,7 +178,6 @@ fun EventsScreen(
                             )
                         }
 
-                        // Bottom spacing for FAB
                         item {
                             Spacer(modifier = Modifier.height(80.dp))
                         }
@@ -170,7 +198,6 @@ fun EventCard(
     var isLiked by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }
 
-    // Delete Confirmation Dialog
     if (showDeleteDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },
@@ -184,15 +211,23 @@ fun EventCard(
             },
             title = {
                 Text(
-                    text = "Delete Event?",
+                    text = "ഇവന്റ് ഇല്ലാതാക്കണോ?",
                     fontWeight = FontWeight.Bold
                 )
             },
             text = {
-                Text(
-                    text = "Are you sure you want to delete \"${event.title}\"? This action cannot be undone.",
-                    style = MaterialTheme.typography.bodyMedium
-                )
+                Column {
+                    Text(
+                        text = "\"${event.title}\" ഇല്ലാതാക്കണമെന്ന് ഉറപ്പാണോ? ഈ പ്രവർത്തനം പഴയപടിയാക്കാൻ കഴിയില്ല.",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "Are you sure you want to delete this event? This action cannot be undone.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = TextSecondary
+                    )
+                }
             },
             confirmButton = {
                 Button(
@@ -206,31 +241,32 @@ fun EventCard(
                 ) {
                     Icon(Icons.Default.Delete, contentDescription = null)
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("Delete")
+                    Text("ഇല്ലാതാക്കുക")
                 }
             },
             dismissButton = {
                 OutlinedButton(
                     onClick = { showDeleteDialog = false }
                 ) {
-                    Text("Cancel")
+                    Text("റദ്ദാക്കുക")
                 }
             },
-            containerColor = Color.White,
+            containerColor = PureWhite,
             shape = RoundedCornerShape(20.dp)
         )
     }
 
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .animateContentSize(),
         colors = CardDefaults.cardColors(
-            containerColor = Color.White
+            containerColor = PureWhite
         ),
         shape = RoundedCornerShape(20.dp),
-        elevation = CardDefaults.cardElevation(4.dp)
+        elevation = CardDefaults.cardElevation(6.dp)
     ) {
         Column {
-            // Image Carousel
             if (event.images.isNotEmpty()) {
                 Box {
                     ImageCarousel(
@@ -240,30 +276,30 @@ fun EventCard(
                             .height(280.dp)
                     )
 
-                    // Delete Button Overlay
+                    // Delete button overlay
                     Surface(
                         onClick = { showDeleteDialog = true },
                         modifier = Modifier
                             .align(Alignment.TopStart)
                             .padding(12.dp)
-                            .size(40.dp),
+                            .size(44.dp),
                         shape = CircleShape,
                         color = ErrorRed,
-                        shadowElevation = 4.dp,
+                        shadowElevation = 6.dp,
                         enabled = !isDeleting
                     ) {
                         Box(contentAlignment = Alignment.Center) {
                             if (isDeleting) {
                                 CircularProgressIndicator(
                                     modifier = Modifier.size(20.dp),
-                                    color = Color.White,
+                                    color = PureWhite,
                                     strokeWidth = 2.dp
                                 )
                             } else {
                                 Icon(
                                     Icons.Default.Delete,
-                                    contentDescription = "Delete Event",
-                                    tint = Color.White,
+                                    contentDescription = "Delete",
+                                    tint = PureWhite,
                                     modifier = Modifier.size(22.dp)
                                 )
                             }
@@ -272,11 +308,10 @@ fun EventCard(
                 }
             }
 
-            // Event Content
             Column(
                 modifier = Modifier.padding(20.dp)
             ) {
-                // Title with Gradient Background
+                // Title with Kerala arch design
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -284,8 +319,8 @@ fun EventCard(
                         .background(
                             Brush.horizontalGradient(
                                 colors = listOf(
-                                    GradientBlueStart,
-                                    GradientBlueEnd
+                                    DeepRoyalBlue,
+                                    RoyalBlueLight
                                 )
                             )
                         )
@@ -295,7 +330,7 @@ fun EventCard(
                         text = event.title,
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
-                        color = Color.White,
+                        color = PureWhite,
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -303,14 +338,14 @@ fun EventCard(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Date with Icon
+                // Date
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Surface(
                         shape = CircleShape,
-                        color = SurfaceBlueLight,
+                        color = DeepRoyalBlue.copy(alpha = 0.1f),
                         modifier = Modifier.size(36.dp)
                     ) {
                         Box(contentAlignment = Alignment.Center) {
@@ -318,7 +353,7 @@ fun EventCard(
                                 Icons.Default.CalendarToday,
                                 contentDescription = null,
                                 modifier = Modifier.size(18.dp),
-                                tint = PrimaryBlue
+                                tint = DeepRoyalBlue
                             )
                         }
                     }
@@ -330,13 +365,12 @@ fun EventCard(
                     )
                 }
 
-                // Description
                 if (event.description.isNotBlank()) {
                     Spacer(modifier = Modifier.height(12.dp))
                     Text(
                         text = event.description,
                         style = MaterialTheme.typography.bodyMedium,
-                        color = TextPrimary,
+                        color = TextDark,
                         maxLines = 3,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -344,24 +378,24 @@ fun EventCard(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                HorizontalDivider(color = DividerLight, thickness = 1.dp)
+                HorizontalDivider(color = LightBorder, thickness = 1.dp)
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Actions Row
+                // Actions
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // Like Button
+                    // Like button
                     Surface(
                         onClick = {
                             isLiked = !isLiked
                             onLikeClick()
                         },
                         shape = RoundedCornerShape(20.dp),
-                        color = if (isLiked) ErrorRed.copy(alpha = 0.1f) else SurfaceBlueLight
+                        color = if (isLiked) ErrorRed.copy(alpha = 0.1f) else DeepRoyalBlue.copy(alpha = 0.1f)
                     ) {
                         Row(
                             modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
@@ -371,22 +405,22 @@ fun EventCard(
                             Icon(
                                 imageVector = if (isLiked) Icons.Filled.Favorite else Icons.Default.FavoriteBorder,
                                 contentDescription = "Like",
-                                tint = if (isLiked) ErrorRed else PrimaryBlue,
+                                tint = if (isLiked) ErrorRed else DeepRoyalBlue,
                                 modifier = Modifier.size(20.dp)
                             )
                             Text(
                                 text = "${event.likesCount + if (isLiked) 1 else 0}",
                                 style = MaterialTheme.typography.bodyMedium,
                                 fontWeight = FontWeight.Bold,
-                                color = if (isLiked) ErrorRed else PrimaryBlue
+                                color = if (isLiked) ErrorRed else DeepRoyalBlue
                             )
                         }
                     }
 
-                    // Photos Count Badge
+                    // Photos count
                     Surface(
                         shape = RoundedCornerShape(20.dp),
-                        color = SurfaceBlueLight
+                        color = HeritageGold.copy(alpha = 0.2f)
                     ) {
                         Row(
                             modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
@@ -397,12 +431,12 @@ fun EventCard(
                                 imageVector = Icons.Default.PhotoLibrary,
                                 contentDescription = null,
                                 modifier = Modifier.size(18.dp),
-                                tint = PrimaryBlue
+                                tint = WarmTerracotta
                             )
                             Text(
-                                text = "${event.images.size} photo${if (event.images.size != 1) "s" else ""}",
+                                text = "${event.images.size} ഫോട്ടോ",
                                 style = MaterialTheme.typography.bodySmall,
-                                color = PrimaryBlue,
+                                color = WarmTerracotta,
                                 fontWeight = FontWeight.Medium
                             )
                         }
@@ -434,7 +468,7 @@ fun ImageCarousel(
             )
         }
 
-        // Gradient Overlay
+        // Gradient overlay
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -444,13 +478,13 @@ fun ImageCarousel(
                     Brush.verticalGradient(
                         colors = listOf(
                             Color.Transparent,
-                            Color.White.copy(alpha = 0.9f)
+                            Color.Black.copy(alpha = 0.6f)
                         )
                     )
                 )
         )
 
-        // Page Indicator
+        // Page indicators
         if (images.size > 1) {
             Row(
                 modifier = Modifier
@@ -462,9 +496,9 @@ fun ImageCarousel(
                     Surface(
                         shape = CircleShape,
                         color = if (pagerState.currentPage == index)
-                            PrimaryBlue
+                            HeritageGold
                         else
-                            Color.White.copy(alpha = 0.5f),
+                            PureWhite.copy(alpha = 0.5f),
                         modifier = Modifier
                             .padding(horizontal = 4.dp)
                             .size(if (pagerState.currentPage == index) 10.dp else 8.dp)
@@ -473,19 +507,19 @@ fun ImageCarousel(
             }
         }
 
-        // Page Counter
+        // Page counter
         if (images.size > 1) {
             Surface(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
                     .padding(16.dp),
                 shape = RoundedCornerShape(20.dp),
-                color = PrimaryBlue.copy(alpha = 0.9f)
+                color = DeepRoyalBlue.copy(alpha = 0.9f)
             ) {
                 Text(
                     text = "${pagerState.currentPage + 1}/${images.size}",
                     style = MaterialTheme.typography.labelMedium,
-                    color = Color.White,
+                    color = PureWhite,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
                 )
@@ -505,7 +539,7 @@ fun EmptyEventsState(
     ) {
         Surface(
             shape = RoundedCornerShape(50),
-            color = SurfaceBlueLight,
+            color = DeepRoyalBlue.copy(alpha = 0.1f),
             modifier = Modifier.size(140.dp)
         ) {
             Box(contentAlignment = Alignment.Center) {
@@ -513,7 +547,7 @@ fun EmptyEventsState(
                     imageVector = Icons.Default.PhotoLibrary,
                     contentDescription = null,
                     modifier = Modifier.size(70.dp),
-                    tint = PrimaryBlue
+                    tint = DeepRoyalBlue
                 )
             }
         }
@@ -521,18 +555,26 @@ fun EmptyEventsState(
         Spacer(modifier = Modifier.height(24.dp))
 
         Text(
-            text = "No Events Yet",
+            text = "ഇവന്റുകളൊന്നുമില്ല",
             style = MaterialTheme.typography.headlineMedium,
-            color = PrimaryBlue,
+            color = DeepRoyalBlue,
             fontWeight = FontWeight.Bold
         )
 
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = "Share your first event photo\nwith the community",
-            style = MaterialTheme.typography.bodyLarge,
-            color = TextSecondary,
+            text = "No Events Yet",
+            style = MaterialTheme.typography.titleMedium,
+            color = TextSecondary
+        )
+
+        Spacer(modifier = Modifier.height(4.dp))
+
+        Text(
+            text = "കമ്മ്യൂണിറ്റിയുമായി നിങ്ങളുടെ ആദ്യത്തെ ഇവന്റ് ഫോട്ടോ പങ്കിടുക",
+            style = MaterialTheme.typography.bodyMedium,
+            color = TextHint,
             textAlign = androidx.compose.ui.text.style.TextAlign.Center
         )
 
@@ -542,15 +584,15 @@ fun EmptyEventsState(
             onClick = onUploadClick,
             shape = RoundedCornerShape(24.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = AccentOrange,
-                contentColor = Color.White
+                containerColor = HeritageGold,
+                contentColor = DeepRoyalBlue
             ),
-            elevation = ButtonDefaults.buttonElevation(4.dp),
+            elevation = ButtonDefaults.buttonElevation(6.dp),
             contentPadding = PaddingValues(horizontal = 32.dp, vertical = 16.dp)
         ) {
             Icon(Icons.Default.Add, contentDescription = null)
             Spacer(modifier = Modifier.width(8.dp))
-            Text("Upload Event", fontWeight = FontWeight.Bold)
+            Text("ഇവന്റ് അപ്‌ലോഡ് ചെയ്യുക", fontWeight = FontWeight.Bold)
         }
     }
 }

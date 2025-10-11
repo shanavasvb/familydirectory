@@ -48,7 +48,7 @@ fun AdminUploadScreen(
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = PrimaryBlue
+                    containerColor = DeepRoyalBlue
                 )
             )
         }
@@ -56,7 +56,7 @@ fun AdminUploadScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(BackgroundLight)
+                .background(SoftGray)
                 .padding(padding)
         ) {
             // Mode Selector
@@ -83,7 +83,7 @@ fun AdminUploadScreen(
                             )
                         },
                         colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = PrimaryBlue,
+                            selectedContainerColor = DeepRoyalBlue,
                             selectedLabelColor = Color.White,
                             selectedLeadingIconColor = Color.White
                         ),
@@ -102,7 +102,7 @@ fun AdminUploadScreen(
                             )
                         },
                         colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = PrimaryBlue,
+                            selectedContainerColor = DeepRoyalBlue,
                             selectedLabelColor = Color.White,
                             selectedLeadingIconColor = Color.White
                         ),
@@ -142,7 +142,7 @@ fun AdminUploadScreen(
                                     horizontalAlignment = Alignment.CenterHorizontally
                                 ) {
                                     CircularProgressIndicator(
-                                        color = PrimaryBlue,
+                                        color = DeepRoyalBlue,
                                         strokeWidth = 3.dp
                                     )
                                     Spacer(modifier = Modifier.height(16.dp))
@@ -150,7 +150,7 @@ fun AdminUploadScreen(
                                         "Uploading family data...",
                                         style = MaterialTheme.typography.bodyLarge,
                                         fontWeight = FontWeight.Medium,
-                                        color = TextPrimary
+                                        color = TextDark
                                     )
                                 }
                             }

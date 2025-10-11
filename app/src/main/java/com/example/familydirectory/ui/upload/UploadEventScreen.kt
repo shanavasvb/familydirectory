@@ -3,6 +3,8 @@ package com.example.familydirectory.ui.upload
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.*
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -17,6 +19,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
@@ -45,7 +48,6 @@ fun UploadEventScreen(
         }
     }
 
-    // Handle upload success
     LaunchedEffect(uiState) {
         if (uiState is UploadUiState.Success) {
             onNavigateBack()
@@ -57,18 +59,26 @@ fun UploadEventScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(
-                        "Upload Event",
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White
-                    )
+                    Column {
+                        Text(
+                            "ഇവന്റ് അപ്‌ലോഡ്",
+                            fontWeight = FontWeight.Bold,
+                            color = PureWhite,
+                            fontSize = MaterialTheme.typography.titleLarge.fontSize
+                        )
+                        Text(
+                            "Upload Event",
+                            fontSize = MaterialTheme.typography.bodySmall.fontSize,
+                            color = PureWhite.copy(alpha = 0.9f)
+                        )
+                    }
                 },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(
                             Icons.Default.Close,
                             "Close",
-                            tint = Color.White
+                            tint = PureWhite
                         )
                     }
                 },
@@ -84,10 +94,10 @@ fun UploadEventScreen(
                                 title.isNotBlank() &&
                                 selectedImages.isNotEmpty(),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = AccentOrange,
-                            contentColor = Color.White,
-                            disabledContainerColor = Color.White.copy(alpha = 0.3f),
-                            disabledContentColor = Color.White.copy(alpha = 0.5f)
+                            containerColor = HeritageGold,
+                            contentColor = DeepRoyalBlue,
+                            disabledContainerColor = PureWhite.copy(alpha = 0.3f),
+                            disabledContentColor = PureWhite.copy(alpha = 0.5f)
                         ),
                         shape = RoundedCornerShape(20.dp),
                         modifier = Modifier.padding(end = 8.dp)
@@ -98,11 +108,11 @@ fun UploadEventScreen(
                             modifier = Modifier.size(18.dp)
                         )
                         Spacer(modifier = Modifier.width(6.dp))
-                        Text("POST", fontWeight = FontWeight.Bold)
+                        Text("പോസ്റ്റ്", fontWeight = FontWeight.Bold)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = PrimaryBlue
+                    containerColor = DeepRoyalBlue
                 )
             )
         }
@@ -110,9 +120,25 @@ fun UploadEventScreen(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(BackgroundLight)
+                .background(SoftGray)
                 .padding(padding)
         ) {
+            // Decorative header border
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(4.dp)
+                    .background(
+                        Brush.horizontalGradient(
+                            colors = listOf(
+                                HeritageGold,
+                                WarmTerracotta,
+                                HeritageGold
+                            )
+                        )
+                    )
+            )
+
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -123,10 +149,10 @@ fun UploadEventScreen(
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     colors = CardDefaults.cardColors(
-                        containerColor = Color.White
+                        containerColor = PureWhite
                     ),
                     shape = RoundedCornerShape(16.dp),
-                    elevation = CardDefaults.cardElevation(3.dp)
+                    elevation = CardDefaults.cardElevation(4.dp)
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Row(
@@ -135,7 +161,7 @@ fun UploadEventScreen(
                         ) {
                             Surface(
                                 shape = CircleShape,
-                                color = SurfaceBlueLight,
+                                color = DeepRoyalBlue.copy(alpha = 0.1f),
                                 modifier = Modifier.size(32.dp)
                             ) {
                                 Box(contentAlignment = Alignment.Center) {
@@ -143,16 +169,23 @@ fun UploadEventScreen(
                                         Icons.Default.Title,
                                         contentDescription = null,
                                         modifier = Modifier.size(18.dp),
-                                        tint = PrimaryBlue
+                                        tint = DeepRoyalBlue
                                     )
                                 }
                             }
-                            Text(
-                                text = "Event Title",
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold,
-                                color = PrimaryBlue
-                            )
+                            Column {
+                                Text(
+                                    text = "ഇവന്റ് ശീർഷകം",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    color = DeepRoyalBlue
+                                )
+                                Text(
+                                    text = "Event Title",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = TextSecondary
+                                )
+                            }
                         }
 
                         Spacer(modifier = Modifier.height(12.dp))
@@ -161,16 +194,16 @@ fun UploadEventScreen(
                             value = title,
                             onValueChange = { title = it },
                             placeholder = {
-                                Text("Enter event title *", color = TextHint)
+                                Text("ഇവന്റ് പേര് നൽകുക *", color = TextHint)
                             },
                             modifier = Modifier.fillMaxWidth(),
                             singleLine = true,
                             enabled = uiState !is UploadUiState.Uploading,
                             colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = PrimaryBlue,
-                                unfocusedBorderColor = BorderBlue,
-                                focusedTextColor = TextPrimary,
-                                unfocusedTextColor = TextPrimary
+                                focusedBorderColor = DeepRoyalBlue,
+                                unfocusedBorderColor = LightBorder,
+                                focusedTextColor = TextDark,
+                                unfocusedTextColor = TextDark
                             ),
                             shape = RoundedCornerShape(12.dp)
                         )
@@ -181,10 +214,10 @@ fun UploadEventScreen(
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     colors = CardDefaults.cardColors(
-                        containerColor = Color.White
+                        containerColor = PureWhite
                     ),
                     shape = RoundedCornerShape(16.dp),
-                    elevation = CardDefaults.cardElevation(3.dp)
+                    elevation = CardDefaults.cardElevation(4.dp)
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Row(
@@ -193,7 +226,7 @@ fun UploadEventScreen(
                         ) {
                             Surface(
                                 shape = CircleShape,
-                                color = SurfaceBlueLight,
+                                color = DeepRoyalBlue.copy(alpha = 0.1f),
                                 modifier = Modifier.size(32.dp)
                             ) {
                                 Box(contentAlignment = Alignment.Center) {
@@ -201,21 +234,23 @@ fun UploadEventScreen(
                                         Icons.Default.Description,
                                         contentDescription = null,
                                         modifier = Modifier.size(18.dp),
-                                        tint = PrimaryBlue
+                                        tint = DeepRoyalBlue
                                     )
                                 }
                             }
-                            Text(
-                                text = "Description",
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold,
-                                color = PrimaryBlue
-                            )
-                            Text(
-                                text = "(Optional)",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = TextTertiary
-                            )
+                            Column {
+                                Text(
+                                    text = "വിവരണം",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    color = DeepRoyalBlue
+                                )
+                                Text(
+                                    text = "Description (Optional)",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = TextSecondary
+                                )
+                            }
                         }
 
                         Spacer(modifier = Modifier.height(12.dp))
@@ -224,7 +259,7 @@ fun UploadEventScreen(
                             value = description,
                             onValueChange = { description = it },
                             placeholder = {
-                                Text("Add event description...", color = TextHint)
+                                Text("ഇവന്റിനെക്കുറിച്ചുള്ള വിവരണം...", color = TextHint)
                             },
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -232,10 +267,10 @@ fun UploadEventScreen(
                             maxLines = 5,
                             enabled = uiState !is UploadUiState.Uploading,
                             colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = PrimaryBlue,
-                                unfocusedBorderColor = BorderBlue,
-                                focusedTextColor = TextPrimary,
-                                unfocusedTextColor = TextPrimary
+                                focusedBorderColor = DeepRoyalBlue,
+                                unfocusedBorderColor = LightBorder,
+                                focusedTextColor = TextDark,
+                                unfocusedTextColor = TextDark
                             ),
                             shape = RoundedCornerShape(12.dp)
                         )
@@ -250,11 +285,11 @@ fun UploadEventScreen(
                         .height(60.dp),
                     enabled = uiState !is UploadUiState.Uploading,
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = if (selectedImages.isEmpty()) PrimaryBlue else AccentTeal,
-                        contentColor = Color.White
+                        containerColor = if (selectedImages.isEmpty()) DeepRoyalBlue else WarmTerracotta,
+                        contentColor = PureWhite
                     ),
                     shape = RoundedCornerShape(16.dp),
-                    elevation = ButtonDefaults.buttonElevation(4.dp)
+                    elevation = ButtonDefaults.buttonElevation(6.dp)
                 ) {
                     Icon(
                         if (selectedImages.isEmpty()) Icons.Default.AddPhotoAlternate else Icons.Default.Add,
@@ -264,13 +299,13 @@ fun UploadEventScreen(
                     Spacer(modifier = Modifier.width(12.dp))
                     Column(horizontalAlignment = Alignment.Start) {
                         Text(
-                            if (selectedImages.isEmpty()) "Select Images" else "Add More Images",
+                            if (selectedImages.isEmpty()) "ചിത്രങ്ങൾ തിരഞ്ഞെടുക്കുക" else "കൂടുതൽ ചിത്രങ്ങൾ",
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold
                         )
                         if (selectedImages.isNotEmpty()) {
                             Text(
-                                "${selectedImages.size} image${if (selectedImages.size != 1) "s" else ""} selected",
+                                "${selectedImages.size} images selected",
                                 style = MaterialTheme.typography.bodySmall
                             )
                         }
@@ -284,10 +319,10 @@ fun UploadEventScreen(
                             .fillMaxWidth()
                             .weight(1f),
                         colors = CardDefaults.cardColors(
-                            containerColor = Color.White
+                            containerColor = PureWhite
                         ),
                         shape = RoundedCornerShape(16.dp),
-                        elevation = CardDefaults.cardElevation(3.dp)
+                        elevation = CardDefaults.cardElevation(4.dp)
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
                             Row(
@@ -296,7 +331,7 @@ fun UploadEventScreen(
                             ) {
                                 Surface(
                                     shape = CircleShape,
-                                    color = SurfaceBlueLight,
+                                    color = DeepRoyalBlue.copy(alpha = 0.1f),
                                     modifier = Modifier.size(32.dp)
                                 ) {
                                     Box(contentAlignment = Alignment.Center) {
@@ -304,21 +339,23 @@ fun UploadEventScreen(
                                             Icons.Default.PhotoLibrary,
                                             contentDescription = null,
                                             modifier = Modifier.size(18.dp),
-                                            tint = PrimaryBlue
+                                            tint = DeepRoyalBlue
                                         )
                                     }
                                 }
-                                Text(
-                                    text = "Selected Images",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    fontWeight = FontWeight.Bold,
-                                    color = PrimaryBlue
-                                )
-                                Text(
-                                    text = "(${selectedImages.size})",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    color = TextTertiary
-                                )
+                                Column {
+                                    Text(
+                                        text = "തിരഞ്ഞെടുത്ത ചിത്രങ്ങൾ",
+                                        style = MaterialTheme.typography.titleMedium,
+                                        fontWeight = FontWeight.Bold,
+                                        color = DeepRoyalBlue
+                                    )
+                                    Text(
+                                        text = "${selectedImages.size} images",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = TextSecondary
+                                    )
+                                }
                             }
 
                             Spacer(modifier = Modifier.height(16.dp))
@@ -339,16 +376,15 @@ fun UploadEventScreen(
                         }
                     }
                 } else {
-                    // Empty State
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
                             .weight(1f),
                         colors = CardDefaults.cardColors(
-                            containerColor = Color.White
+                            containerColor = PureWhite
                         ),
                         shape = RoundedCornerShape(16.dp),
-                        elevation = CardDefaults.cardElevation(3.dp)
+                        elevation = CardDefaults.cardElevation(4.dp)
                     ) {
                         Box(
                             modifier = Modifier.fillMaxSize(),
@@ -359,7 +395,7 @@ fun UploadEventScreen(
                             ) {
                                 Surface(
                                     shape = CircleShape,
-                                    color = SurfaceBlueLight,
+                                    color = DeepRoyalBlue.copy(alpha = 0.1f),
                                     modifier = Modifier.size(100.dp)
                                 ) {
                                     Box(contentAlignment = Alignment.Center) {
@@ -367,7 +403,7 @@ fun UploadEventScreen(
                                             Icons.Default.PhotoLibrary,
                                             contentDescription = null,
                                             modifier = Modifier.size(50.dp),
-                                            tint = PrimaryBlue
+                                            tint = DeepRoyalBlue
                                         )
                                     }
                                 }
@@ -375,16 +411,16 @@ fun UploadEventScreen(
                                 Spacer(modifier = Modifier.height(16.dp))
 
                                 Text(
-                                    text = "No images selected",
+                                    text = "ചിത്രങ്ങളൊന്നും തിരഞ്ഞെടുത്തിട്ടില്ല",
                                     style = MaterialTheme.typography.titleMedium,
-                                    color = TextPrimary,
+                                    color = TextDark,
                                     fontWeight = FontWeight.Medium
                                 )
 
                                 Spacer(modifier = Modifier.height(4.dp))
 
                                 Text(
-                                    text = "Tap 'Select Images' button above",
+                                    text = "No images selected",
                                     style = MaterialTheme.typography.bodySmall,
                                     color = TextSecondary
                                 )
@@ -393,13 +429,13 @@ fun UploadEventScreen(
                     }
                 }
 
-                // Upload Progress or Error
+                // Upload Status
                 when (val state = uiState) {
                     is UploadUiState.Uploading -> {
                         Card(
                             modifier = Modifier.fillMaxWidth(),
                             colors = CardDefaults.cardColors(
-                                containerColor = SurfaceBlueLight
+                                containerColor = DeepRoyalBlue.copy(alpha = 0.1f)
                             ),
                             shape = RoundedCornerShape(16.dp)
                         ) {
@@ -413,15 +449,22 @@ fun UploadEventScreen(
                                 ) {
                                     CircularProgressIndicator(
                                         modifier = Modifier.size(24.dp),
-                                        color = PrimaryBlue,
+                                        color = DeepRoyalBlue,
                                         strokeWidth = 3.dp
                                     )
-                                    Text(
-                                        text = "Uploading your event...",
-                                        style = MaterialTheme.typography.bodyLarge,
-                                        color = PrimaryBlue,
-                                        fontWeight = FontWeight.Medium
-                                    )
+                                    Column {
+                                        Text(
+                                            text = "അപ്‌ലോഡ് ചെയ്യുന്നു...",
+                                            style = MaterialTheme.typography.bodyLarge,
+                                            color = DeepRoyalBlue,
+                                            fontWeight = FontWeight.Medium
+                                        )
+                                        Text(
+                                            text = "Uploading your event",
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = TextSecondary
+                                        )
+                                    }
                                 }
 
                                 Spacer(modifier = Modifier.height(12.dp))
@@ -431,8 +474,8 @@ fun UploadEventScreen(
                                         .fillMaxWidth()
                                         .height(6.dp)
                                         .clip(RoundedCornerShape(3.dp)),
-                                    color = PrimaryBlue,
-                                    trackColor = Color.White
+                                    color = DeepRoyalBlue,
+                                    trackColor = PureWhite
                                 )
                             }
                         }
@@ -456,12 +499,18 @@ fun UploadEventScreen(
                                     tint = ErrorRed,
                                     modifier = Modifier.size(24.dp)
                                 )
-                                Text(
-                                    text = state.message,
-                                    color = ErrorRed,
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    fontWeight = FontWeight.Medium
-                                )
+                                Column {
+                                    Text(
+                                        text = "അപ്‌ലോഡ് പരാജയപ്പെട്ടു",
+                                        color = ErrorRed,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                    Text(
+                                        text = state.message,
+                                        color = ErrorRed,
+                                        style = MaterialTheme.typography.bodySmall
+                                    )
+                                }
                             }
                         }
                     }
@@ -483,7 +532,6 @@ fun ImagePreviewItem(
             .aspectRatio(1f)
             .fillMaxWidth()
     ) {
-        // Image
         Card(
             modifier = Modifier.fillMaxSize(),
             shape = RoundedCornerShape(12.dp),
@@ -497,7 +545,6 @@ fun ImagePreviewItem(
             )
         }
 
-        // Remove Button
         if (enabled) {
             Surface(
                 modifier = Modifier
@@ -513,7 +560,7 @@ fun ImagePreviewItem(
                     Icon(
                         Icons.Default.Close,
                         contentDescription = "Remove",
-                        tint = Color.White,
+                        tint = PureWhite,
                         modifier = Modifier.size(16.dp)
                     )
                 }

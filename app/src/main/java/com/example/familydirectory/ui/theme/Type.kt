@@ -14,7 +14,7 @@ val Typography = Typography(
         fontSize = 57.sp,
         lineHeight = 64.sp,
         letterSpacing = (-0.25).sp,
-        color = TextPrimary
+        color = TextDark
     ),
     displayMedium = TextStyle(
         fontFamily = FontFamily.Default,
@@ -22,7 +22,7 @@ val Typography = Typography(
         fontSize = 45.sp,
         lineHeight = 52.sp,
         letterSpacing = 0.sp,
-        color = TextPrimary
+        color = TextDark
     ),
     displaySmall = TextStyle(
         fontFamily = FontFamily.Default,
@@ -30,7 +30,7 @@ val Typography = Typography(
         fontSize = 36.sp,
         lineHeight = 44.sp,
         letterSpacing = 0.sp,
-        color = TextPrimary
+        color = TextDark
     ),
 
     // Headline styles
@@ -40,7 +40,7 @@ val Typography = Typography(
         fontSize = 32.sp,
         lineHeight = 40.sp,
         letterSpacing = 0.sp,
-        color = TextPrimary
+        color = TextDark
     ),
     headlineMedium = TextStyle(
         fontFamily = FontFamily.Default,
@@ -48,7 +48,7 @@ val Typography = Typography(
         fontSize = 28.sp,
         lineHeight = 36.sp,
         letterSpacing = 0.sp,
-        color = TextPrimary
+        color = TextDark
     ),
     headlineSmall = TextStyle(
         fontFamily = FontFamily.Default,
@@ -56,7 +56,7 @@ val Typography = Typography(
         fontSize = 24.sp,
         lineHeight = 32.sp,
         letterSpacing = 0.sp,
-        color = TextPrimary
+        color = TextDark
     ),
 
     // Title styles
@@ -66,7 +66,7 @@ val Typography = Typography(
         fontSize = 22.sp,
         lineHeight = 28.sp,
         letterSpacing = 0.sp,
-        color = TextPrimary
+        color = TextDark
     ),
     titleMedium = TextStyle(
         fontFamily = FontFamily.Default,
@@ -74,7 +74,7 @@ val Typography = Typography(
         fontSize = 16.sp,
         lineHeight = 24.sp,
         letterSpacing = 0.15.sp,
-        color = TextPrimary
+        color = TextDark
     ),
     titleSmall = TextStyle(
         fontFamily = FontFamily.Default,
@@ -82,7 +82,7 @@ val Typography = Typography(
         fontSize = 14.sp,
         lineHeight = 20.sp,
         letterSpacing = 0.1.sp,
-        color = TextPrimary
+        color = TextDark
     ),
 
     // Body styles
@@ -118,7 +118,7 @@ val Typography = Typography(
         fontSize = 14.sp,
         lineHeight = 20.sp,
         letterSpacing = 0.1.sp,
-        color = TextPrimary
+        color = TextDark
     ),
     labelMedium = TextStyle(
         fontFamily = FontFamily.Default,
@@ -134,6 +134,6 @@ val Typography = Typography(
         fontSize = 11.sp,
         lineHeight = 16.sp,
         letterSpacing = 0.5.sp,
-        color = TextTertiary
+        color = TextHint
     )
 )

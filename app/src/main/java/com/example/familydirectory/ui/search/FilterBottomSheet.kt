@@ -12,6 +12,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -39,7 +41,7 @@ fun FilterBottomSheet(
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
-        containerColor = BackgroundWhite,
+        containerColor = PureWhite,
         shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp)
     ) {
         Column(
@@ -47,50 +49,72 @@ fun FilterBottomSheet(
                 .fillMaxWidth()
                 .padding(24.dp)
         ) {
-            // Header
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+            // Header with gradient
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(
+                        Brush.horizontalGradient(
+                            colors = listOf(
+                                DeepRoyalBlue,
+                                RoyalBlueLight
+                            )
+                        )
+                    )
+                    .padding(20.dp)
             ) {
                 Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Surface(
-                        shape = CircleShape,
-                        color = SurfaceBlueLight,
-                        modifier = Modifier.size(44.dp)
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
-                        Box(contentAlignment = Alignment.Center) {
-                            Icon(
-                                Icons.Default.FilterAlt,
-                                contentDescription = null,
-                                modifier = Modifier.size(24.dp),
-                                tint = PrimaryBlue
+                        Surface(
+                            shape = CircleShape,
+                            color = HeritageGold,
+                            modifier = Modifier.size(44.dp)
+                        ) {
+                            Box(contentAlignment = Alignment.Center) {
+                                Icon(
+                                    Icons.Default.FilterAlt,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(24.dp),
+                                    tint = DeepRoyalBlue
+                                )
+                            }
+                        }
+                        Column {
+                            Text(
+                                text = "ഫിൽട്ടറുകൾ",
+                                style = MaterialTheme.typography.headlineSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = PureWhite
+                            )
+                            Text(
+                                text = "Filter Families",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = PureWhite.copy(alpha = 0.9f)
                             )
                         }
                     }
-                    Text(
-                        text = "Filter Families",
-                        style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.Bold,
-                        color = PrimaryBlue
-                    )
-                }
 
-                IconButton(onClick = onDismiss) {
-                    Icon(
-                        Icons.Default.Close,
-                        "Close",
-                        tint = TextSecondary
-                    )
+                    IconButton(onClick = onDismiss) {
+                        Icon(
+                            Icons.Default.Close,
+                            "Close",
+                            tint = PureWhite
+                        )
+                    }
                 }
             }
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Scrollable content
+            // Scrollable filters
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -100,7 +124,8 @@ fun FilterBottomSheet(
             ) {
                 // Parish Filter
                 FilterSection(
-                    title = "Parish",
+                    title = "ഇടവക",
+                    subtitle = "Parish",
                     icon = Icons.Default.Church,
                     selectedValue = selectedParish,
                     options = if (availableParishes.isNotEmpty())
@@ -110,11 +135,12 @@ fun FilterBottomSheet(
                     onValueChange = { selectedParish = it }
                 )
 
-                HorizontalDivider(color = DividerLight)
+                HorizontalDivider(color = LightBorder)
 
                 // Region Filter
                 FilterSection(
-                    title = "Region",
+                    title = "പ്രദേശം",
+                    subtitle = "Region",
                     icon = Icons.Default.Place,
                     selectedValue = selectedRegion,
                     options = if (availableRegions.isNotEmpty())
@@ -124,22 +150,24 @@ fun FilterBottomSheet(
                     onValueChange = { selectedRegion = it }
                 )
 
-                HorizontalDivider(color = DividerLight)
+                HorizontalDivider(color = LightBorder)
 
                 // Blood Group Filter
                 FilterSection(
-                    title = "Blood Group",
+                    title = "രക്തഗ്രൂപ്പ്",
+                    subtitle = "Blood Group",
                     icon = Icons.Default.Favorite,
                     selectedValue = selectedBloodGroup,
                     options = FilterOptions.bloodGroups,
                     onValueChange = { selectedBloodGroup = it }
                 )
 
-                HorizontalDivider(color = DividerLight)
+                HorizontalDivider(color = LightBorder)
 
                 // Gender Filter
                 FilterSection(
-                    title = "Gender",
+                    title = "ലിംഗം",
+                    subtitle = "Gender",
                     icon = Icons.Default.Person,
                     selectedValue = selectedGender,
                     options = FilterOptions.genders,
@@ -167,7 +195,7 @@ fun FilterBottomSheet(
                     colors = ButtonDefaults.outlinedButtonColors(
                         contentColor = ErrorRed
                     ),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, ErrorRed)
+                    border = androidx.compose.foundation.BorderStroke(1.5.dp, ErrorRed)
                 ) {
                     Icon(
                         Icons.Default.Clear,
@@ -175,7 +203,7 @@ fun FilterBottomSheet(
                         modifier = Modifier.size(18.dp)
                     )
                     Spacer(modifier = Modifier.width(6.dp))
-                    Text("Clear All", fontWeight = FontWeight.Bold)
+                    Text("മായ്ക്കുക", fontWeight = FontWeight.Bold)
                 }
 
                 Button(
@@ -193,8 +221,8 @@ fun FilterBottomSheet(
                     modifier = Modifier.weight(1f),
                     shape = RoundedCornerShape(16.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = PrimaryBlue,
-                        contentColor = Color.White
+                        containerColor = DeepRoyalBlue,
+                        contentColor = PureWhite
                     )
                 ) {
                     Icon(
@@ -203,7 +231,7 @@ fun FilterBottomSheet(
                         modifier = Modifier.size(18.dp)
                     )
                     Spacer(modifier = Modifier.width(6.dp))
-                    Text("Apply", fontWeight = FontWeight.Bold)
+                    Text("പ്രയോഗിക്കുക", fontWeight = FontWeight.Bold)
                 }
             }
 
@@ -216,6 +244,7 @@ fun FilterBottomSheet(
 @Composable
 fun FilterSection(
     title: String,
+    subtitle: String,
     icon: androidx.compose.ui.graphics.vector.ImageVector,
     selectedValue: String?,
     options: List<String>,
@@ -233,24 +262,31 @@ fun FilterSection(
         ) {
             Surface(
                 shape = CircleShape,
-                color = SurfaceBlueLight,
-                modifier = Modifier.size(32.dp)
+                color = DeepRoyalBlue.copy(alpha = 0.1f),
+                modifier = Modifier.size(36.dp)
             ) {
                 Box(contentAlignment = Alignment.Center) {
                     Icon(
                         imageVector = icon,
                         contentDescription = null,
                         modifier = Modifier.size(18.dp),
-                        tint = PrimaryBlue
+                        tint = DeepRoyalBlue
                     )
                 }
             }
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color = TextPrimary
-            )
+            Column {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = TextDark
+                )
+                Text(
+                    text = subtitle,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = TextSecondary
+                )
+            }
         }
 
         ExposedDropdownMenuBox(
@@ -258,7 +294,7 @@ fun FilterSection(
             onExpandedChange = { expanded = it }
         ) {
             OutlinedTextField(
-                value = selectedValue ?: "All",
+                value = selectedValue ?: "എല്ലാം",
                 onValueChange = {},
                 readOnly = true,
                 trailingIcon = {
@@ -268,12 +304,12 @@ fun FilterSection(
                     .fillMaxWidth()
                     .menuAnchor(),
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = PrimaryBlue,
-                    unfocusedBorderColor = BorderBlue,
-                    focusedTextColor = TextPrimary,
-                    unfocusedTextColor = TextPrimary,
-                    focusedContainerColor = Color.White,
-                    unfocusedContainerColor = Color.White
+                    focusedBorderColor = DeepRoyalBlue,
+                    unfocusedBorderColor = LightBorder,
+                    focusedTextColor = TextDark,
+                    unfocusedTextColor = TextDark,
+                    focusedContainerColor = PureWhite,
+                    unfocusedContainerColor = PureWhite
                 ),
                 shape = RoundedCornerShape(12.dp)
             )
@@ -281,14 +317,14 @@ fun FilterSection(
             ExposedDropdownMenu(
                 expanded = expanded,
                 onDismissRequest = { expanded = false },
-                modifier = Modifier.background(Color.White)
+                modifier = Modifier.background(PureWhite)
             ) {
                 DropdownMenuItem(
                     text = {
                         Text(
-                            "All",
+                            "എല്ലാം / All",
                             fontWeight = if (selectedValue == null) FontWeight.Bold else FontWeight.Normal,
-                            color = if (selectedValue == null) PrimaryBlue else TextPrimary
+                            color = if (selectedValue == null) DeepRoyalBlue else TextDark
                         )
                     },
                     onClick = {
@@ -296,7 +332,7 @@ fun FilterSection(
                         expanded = false
                     },
                     leadingIcon = if (selectedValue == null) {
-                        { Icon(Icons.Default.Check, null, tint = PrimaryBlue) }
+                        { Icon(Icons.Default.Check, null, tint = DeepRoyalBlue) }
                     } else null
                 )
 
@@ -306,7 +342,7 @@ fun FilterSection(
                             Text(
                                 option,
                                 fontWeight = if (selectedValue == option) FontWeight.Bold else FontWeight.Normal,
-                                color = if (selectedValue == option) PrimaryBlue else TextPrimary
+                                color = if (selectedValue == option) DeepRoyalBlue else TextDark
                             )
                         },
                         onClick = {
@@ -314,7 +350,7 @@ fun FilterSection(
                             expanded = false
                         },
                         leadingIcon = if (selectedValue == option) {
-                            { Icon(Icons.Default.Check, null, tint = PrimaryBlue) }
+                            { Icon(Icons.Default.Check, null, tint = DeepRoyalBlue) }
                         } else null
                     )
                 }

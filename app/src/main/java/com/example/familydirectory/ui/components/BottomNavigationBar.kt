@@ -58,7 +58,7 @@ fun BottomNavigationBar(navController: NavController) {
 
     NavigationBar(
         containerColor = Color.White,
-        contentColor = PrimaryBlue,
+        contentColor = DeepRoyalBlue,
         tonalElevation = 8.dp
     ) {
         items.forEach { item ->
@@ -88,11 +88,11 @@ fun BottomNavigationBar(navController: NavController) {
                     }
                 },
                 colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = PrimaryBlue,
-                    selectedTextColor = PrimaryBlue,
-                    unselectedIconColor = TextTertiary,
-                    unselectedTextColor = TextTertiary,
-                    indicatorColor = SurfaceBlueLight
+                    selectedIconColor = DeepRoyalBlue,
+                    selectedTextColor = DeepRoyalBlue,
+                    unselectedIconColor = TextHint,
+                    unselectedTextColor = TextHint,
+                    indicatorColor = SoftGray
                 )
             )
         }
