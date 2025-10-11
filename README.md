@@ -1,6 +1,8 @@
 
+---
+
 ```markdown
-# 🏛️ Family Directory
+# 🏛️ മാളികുടി കുടുംബയോഗം | Malikudy Kudumbayogam Family Directory
 
 <div align="center">
 
@@ -10,7 +12,7 @@
 ![Language](https://img.shields.io/badge/Kotlin-100%25-purple?style=for-the-badge&logo=kotlin)
 ![Jetpack Compose](https://img.shields.io/badge/Jetpack_Compose-UI-4285F4?style=for-the-badge&logo=jetpack-compose)
 
-**A comprehensive digital family directory app for the  community, preserving family connections and heritage across Kerala and beyond.**
+**A comprehensive digital family directory app for the Malikudy community, preserving family connections and heritage across Kerala and beyond.**
 
 [Download APK](https://github.com/shanavasvb/familydirectory/releases) • [Report Bug](https://github.com/shanavasvb/familydirectory/issues) • [Request Feature](https://github.com/shanavasvb/familydirectory/issues)
 
@@ -42,7 +44,7 @@
 
 ## 🌟 About The Project
 
-The ** Family Directory** is a modern Android application designed to digitally preserve and connect the  community. Originally migrating from Wayanad to various parts of Kerala and beyond, this app serves as a comprehensive directory of family members, their locations, and relationships.
+The **Malikudy Kudumbayogam Family Directory** is a modern Android application designed to digitally preserve and connect the Malikudy family community. Originally migrating from Wayanad to various parts of Kerala and beyond, this app serves as a comprehensive directory of family members, their locations, and relationships.
 
 ### 🎯 Purpose
 
@@ -548,7 +550,7 @@ Create `build.sh`:
 ```bash
 #!/bin/bash
 
-echo "🚀 Building  Kudumbayogam App..."
+echo "🚀 Building Malikudy Kudumbayogam App..."
 
 # Get version
 VERSION=$(grep "versionName" app/build.gradle.kts | cut -d'"' -f2)
@@ -1048,7 +1050,7 @@ This project was inspired by the need to preserve family heritage and strengthen
 
 <div align="center">
 
-### Made with ❤️ for the  Community
+### Made with ❤️ for the Malikudy Community
 
 **If this project helps you, please consider giving it a ⭐!**
 
