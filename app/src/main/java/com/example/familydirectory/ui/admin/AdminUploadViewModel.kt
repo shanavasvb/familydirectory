@@ -1,73 +1,48 @@
 package com.example.familydirectory.ui.admin
 
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.familydirectory.data.model.Family
-import com.example.familydirectory.data.model.FamilyMember
 import com.example.familydirectory.data.repository.FamilyRepository
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
+import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class AdminUploadViewModel : ViewModel() {
+// ✅ Renamed to avoid conflict with Cloudinary UploadStatus
+sealed class AdminUploadState {
+    object Idle : AdminUploadState()
+    data class Uploading(val current: Int, val total: Int) : AdminUploadState()
+    data class Success(val count: Int) : AdminUploadState()
+    data class Error(val message: String) : AdminUploadState()
+}
 
+class AdminUploadViewModel : ViewModel() {
     private val repository = FamilyRepository()
     private val gson = Gson()
 
-    private val _uiState = MutableStateFlow<AdminUploadUiState>(AdminUploadUiState.Idle)
-    val uiState: StateFlow<AdminUploadUiState> = _uiState.asStateFlow()
+    private val _uploadStatus = MutableStateFlow<AdminUploadState>(AdminUploadState.Idle)
+    val uploadStatus: StateFlow<AdminUploadState> = _uploadStatus.asStateFlow()
 
-    fun uploadFromJson(jsonText: String) {
-        viewModelScope.launch {
-            try {
-                _uiState.value = AdminUploadUiState.Uploading
+    private val _selectedTab = MutableStateFlow(0)
+    val selectedTab: StateFlow<Int> = _selectedTab.asStateFlow()
 
-                // Parse JSON to Family object
-                val family = gson.fromJson(jsonText, Family::class.java)
-
-                // Validate required fields
-                if (family.familyHead.isBlank()) {
-                    _uiState.value = AdminUploadUiState.Error("Family head name is required")
-                    return@launch
-                }
-
-                if (family.place.isBlank()) {
-                    _uiState.value = AdminUploadUiState.Error("Place is required")
-                    return@launch
-                }
-
-                // Generate search terms
-                val familyWithSearchTerms = family.copy(
-                    searchTerms = generateSearchTerms(family)
-                )
-
-                // Upload to Firestore
-                val result = repository.addFamily(familyWithSearchTerms)
-
-                result.onSuccess { familyId ->
-                    _uiState.value = AdminUploadUiState.Success(familyId)
-                }.onFailure { error ->
-                    _uiState.value = AdminUploadUiState.Error(
-                        error.message ?: "Upload failed"
-                    )
-                }
-
-            } catch (e: JsonSyntaxException) {
-                _uiState.value = AdminUploadUiState.Error(
-                    "Invalid JSON format: ${e.message}"
-                )
-            } catch (e: Exception) {
-                _uiState.value = AdminUploadUiState.Error(
-                    e.message ?: "Unknown error occurred"
-                )
-            }
-        }
+    fun selectTab(index: Int) {
+        _selectedTab.value = index
     }
 
-    fun uploadFromForm(
+    fun resetStatus() {
+        _uploadStatus.value = AdminUploadState.Idle
+    }
+
+    /**
+     * Upload family from form data
+     */
+    fun uploadFamilyFromForm(
         familyHead: String,
         place: String,
         postOffice: String,
@@ -84,119 +59,176 @@ class AdminUploadViewModel : ViewModel() {
     ) {
         viewModelScope.launch {
             try {
-                _uiState.value = AdminUploadUiState.Uploading
+                _uploadStatus.value = AdminUploadState.Uploading(1, 1)
 
                 val family = Family(
-                    familyHead = familyHead.trim(),
-                    place = place.trim(),
-                    postOffice = postOffice.trim(),
-                    region = region.trim(),
-                    parish = parish.trim(),
-                    phone = phone.trim(),
-                    email = email.trim(),
-                    job = job.trim(),
-                    education = education.trim(),
-                    bloodGroup = bloodGroup.trim(),
-                    dob = dob.trim(),
-                    gender = gender.trim(),
-                    otherInfo = otherInfo.trim(),
+                    familyHead = familyHead,
+                    place = place,
+                    postOffice = postOffice,
+                    region = region,
+                    parish = parish,
+                    phone = phone,
+                    email = email,
+                    job = job,
+                    education = education,
+                    bloodGroup = bloodGroup,
+                    dob = dob,
+                    gender = gender,
                     familyMembers = emptyList(),
-                    searchTerms = emptyList()
+                    otherInfo = otherInfo,
+                    searchTerms = generateSearchTerms(familyHead, place, phone, parish, region)
                 )
 
-                // Generate search terms
-                val familyWithSearchTerms = family.copy(
-                    searchTerms = generateSearchTerms(family)
-                )
+                val result = repository.addFamily(family)
 
-                // Upload to Firestore
-                val result = repository.addFamily(familyWithSearchTerms)
-
-                result.onSuccess { familyId ->
-                    _uiState.value = AdminUploadUiState.Success(familyId)
-                }.onFailure { error ->
-                    _uiState.value = AdminUploadUiState.Error(
-                        error.message ?: "Upload failed"
-                    )
+                _uploadStatus.value = if (result.isSuccess) {
+                    AdminUploadState.Success(1)
+                } else {
+                    AdminUploadState.Error(result.exceptionOrNull()?.message ?: "Upload failed")
                 }
-
             } catch (e: Exception) {
-                _uiState.value = AdminUploadUiState.Error(
-                    e.message ?: "Unknown error occurred"
+                _uploadStatus.value = AdminUploadState.Error(e.message ?: "Unknown error")
+            }
+        }
+    }
+
+    /**
+     * Upload family/families from JSON
+     * Supports both single object and array of objects
+     */
+    fun uploadFamilyFromJson(jsonString: String) {
+        viewModelScope.launch {
+            try {
+                val trimmedJson = jsonString.trim()
+
+                // Check if it's an array or single object
+                if (trimmedJson.startsWith("[")) {
+                    // Multiple families (array)
+                    uploadMultipleFamilies(trimmedJson)
+                } else if (trimmedJson.startsWith("{")) {
+                    // Single family (object)
+                    uploadSingleFamily(trimmedJson)
+                } else {
+                    _uploadStatus.value = AdminUploadState.Error("Invalid JSON format. Must start with [ or {")
+                }
+            } catch (e: JsonSyntaxException) {
+                _uploadStatus.value = AdminUploadState.Error("Invalid JSON format: ${e.message}")
+            } catch (e: Exception) {
+                _uploadStatus.value = AdminUploadState.Error(e.message ?: "Unknown error")
+            }
+        }
+    }
+
+    private suspend fun uploadSingleFamily(jsonString: String) {
+        try {
+            _uploadStatus.value = AdminUploadState.Uploading(1, 1)
+
+            val family = gson.fromJson(jsonString, Family::class.java)
+            val familyWithSearchTerms = family.copy(
+                searchTerms = generateSearchTerms(
+                    family.familyHead,
+                    family.place,
+                    family.phone,
+                    family.parish,
+                    family.region
                 )
+            )
+
+            val result = repository.addFamily(familyWithSearchTerms)
+
+            _uploadStatus.value = if (result.isSuccess) {
+                AdminUploadState.Success(1)
+            } else {
+                AdminUploadState.Error(result.exceptionOrNull()?.message ?: "Upload failed")
             }
+        } catch (e: Exception) {
+            _uploadStatus.value = AdminUploadState.Error("Error parsing JSON: ${e.message}")
         }
     }
 
-    private fun generateSearchTerms(family: Family): List<String> {
-        val terms = mutableSetOf<String>()
+    private suspend fun uploadMultipleFamilies(jsonString: String) {
+        try {
+            val listType = object : TypeToken<List<Family>>() {}.type
+            val families: List<Family> = gson.fromJson(jsonString, listType)
 
-        // Family head
-        if (family.familyHead.isNotEmpty()) {
-            terms.add(family.familyHead.lowercase())
-            family.familyHead.lowercase().split(" ").forEach { word ->
-                if (word.length > 1) terms.add(word)
+            if (families.isEmpty()) {
+                _uploadStatus.value = AdminUploadState.Error("No families found in JSON")
+                return
             }
-        }
 
-        // Location
-        if (family.place.isNotEmpty()) terms.add(family.place.lowercase())
-        if (family.region.isNotEmpty()) terms.add(family.region.lowercase())
-        if (family.postOffice.isNotEmpty()) terms.add(family.postOffice.lowercase())
+            val total = families.size
+            var successCount = 0
+            var errorCount = 0
+            val errors = mutableListOf<String>()
 
-        // Parish
-        if (family.parish.isNotEmpty()) {
-            terms.add(family.parish.lowercase())
-            family.parish.lowercase().split(" ").forEach { word ->
-                if (word.length > 2) terms.add(word)
-            }
-        }
+            families.forEachIndexed { index, family ->
+                _uploadStatus.value = AdminUploadState.Uploading(index + 1, total)
 
-        // Phone
-        if (family.phone.isNotEmpty()) {
-            val cleanPhone = family.phone.replace(Regex("[^0-9]"), "")
-            terms.add(cleanPhone)
-            if (cleanPhone.length >= 4) {
-                terms.add(cleanPhone.takeLast(4))
-            }
-        }
+                try {
+                    val familyWithSearchTerms = family.copy(
+                        searchTerms = generateSearchTerms(
+                            family.familyHead,
+                            family.place,
+                            family.phone,
+                            family.parish,
+                            family.region
+                        )
+                    )
 
-        // Email
-        if (family.email.isNotEmpty()) {
-            terms.add(family.email.lowercase())
-        }
+                    val result = repository.addFamily(familyWithSearchTerms)
 
-        // Family members
-        family.familyMembers.forEach { member ->
-            if (member.name.isNotEmpty()) {
-                terms.add(member.name.lowercase())
-                member.name.lowercase().split(" ").forEach { word ->
-                    if (word.length > 1) terms.add(word)
+                    if (result.isSuccess) {
+                        successCount++
+                    } else {
+                        errorCount++
+                        errors.add("${family.familyHead}: ${result.exceptionOrNull()?.message}")
+                    }
+                } catch (e: Exception) {
+                    errorCount++
+                    errors.add("${family.familyHead}: ${e.message}")
                 }
+
+                // Small delay to avoid overwhelming Firestore
+                kotlinx.coroutines.delay(100)
             }
-            if (member.phone.isNotEmpty()) {
-                val cleanPhone = member.phone.replace(Regex("[^0-9]"), "")
-                terms.add(cleanPhone)
-                if (cleanPhone.length >= 4) {
-                    terms.add(cleanPhone.takeLast(4))
-                }
+
+            _uploadStatus.value = if (errorCount == 0) {
+                AdminUploadState.Success(successCount)
+            } else if (successCount > 0) {
+                AdminUploadState.Error("Uploaded $successCount, Failed $errorCount. Errors: ${errors.take(3).joinToString(", ")}")
+            } else {
+                AdminUploadState.Error("All uploads failed. First error: ${errors.firstOrNull()}")
             }
-            if (member.email.isNotEmpty()) {
-                terms.add(member.email.lowercase())
-            }
+        } catch (e: Exception) {
+            _uploadStatus.value = AdminUploadState.Error("Error parsing JSON array: ${e.message}")
         }
-
-        return terms.toList()
     }
 
-    fun resetState() {
-        _uiState.value = AdminUploadUiState.Idle
-    }
-}
+    private fun generateSearchTerms(
+        familyHead: String,
+        place: String,
+        phone: String,
+        parish: String,
+        region: String
+    ): List<String> {
+        return buildList {
+            // Add family head name terms
+            addAll(familyHead.lowercase().split(" "))
 
-sealed class AdminUploadUiState {
-    object Idle : AdminUploadUiState()
-    object Uploading : AdminUploadUiState()
-    data class Success(val familyId: String) : AdminUploadUiState()
-    data class Error(val message: String) : AdminUploadUiState()
+            // Add place
+            add(place.lowercase())
+
+            // Add phone number (full and partial)
+            add(phone)
+            if (phone.length >= 6) {
+                add(phone.takeLast(6))
+            }
+
+            // Add parish
+            addAll(parish.lowercase().split(" "))
+
+            // Add region
+            add(region.lowercase())
+        }.filter { it.isNotBlank() }.distinct()
+    }
 }

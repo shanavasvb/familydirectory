@@ -12,7 +12,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.familydirectory.data.model.FilterOptions
@@ -20,8 +20,10 @@ import com.example.familydirectory.ui.theme.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FormUploadContent(viewModel: AdminUploadViewModel) {
-    // Family Head Details
+fun FormUploadContent(
+    viewModel: AdminUploadViewModel,
+    uploadStatus: AdminUploadState
+) {
     var familyHead by remember { mutableStateOf("") }
     var place by remember { mutableStateOf("") }
     var postOffice by remember { mutableStateOf("") }
@@ -39,202 +41,282 @@ fun FormUploadContent(viewModel: AdminUploadViewModel) {
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(SoftGray)
             .verticalScroll(rememberScrollState())
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        // Info Card
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(
-                containerColor = SoftGray
-            ),
-            shape = RoundedCornerShape(16.dp)
-        ) {
-            Row(
-                modifier = Modifier.padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
+        // Basic Information
+        SectionCard(title = "അടിസ്ഥാന വിവരങ്ങൾ", subtitle = "Basic Information") {
+            OutlinedTextField(
+                value = familyHead,
+                onValueChange = { familyHead = it },
+                label = { Text("കുടുംബനാഥൻ / Family Head *") },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = DeepRoyalBlue,
+                    unfocusedBorderColor = LightBorder
+                )
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            OutlinedTextField(
+                value = place,
+                onValueChange = { place = it },
+                label = { Text("സ്ഥലം / Place *") },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = DeepRoyalBlue,
+                    unfocusedBorderColor = LightBorder
+                )
+            )
+        }
+
+        // Location Details
+        SectionCard(title = "സ്ഥല വിവരങ്ങൾ", subtitle = "Location Details") {
+            OutlinedTextField(
+                value = postOffice,
+                onValueChange = { postOffice = it },
+                label = { Text("പോസ്റ്റ് ഓഫീസ് / Post Office") },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = DeepRoyalBlue,
+                    unfocusedBorderColor = LightBorder
+                )
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            OutlinedTextField(
+                value = region,
+                onValueChange = { region = it },
+                label = { Text("പ്രദേശം / Region") },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = DeepRoyalBlue,
+                    unfocusedBorderColor = LightBorder
+                )
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            var parishExpanded by remember { mutableStateOf(false) }
+            ExposedDropdownMenuBox(
+                expanded = parishExpanded,
+                onExpandedChange = { parishExpanded = it }
             ) {
-                Surface(
-                    shape = CircleShape,
-                    color = DeepRoyalBlue,
-                    modifier = Modifier.size(32.dp)
+                OutlinedTextField(
+                    value = parish,
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text("ഇടവക / Parish") },
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = parishExpanded) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .menuAnchor(),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = DeepRoyalBlue,
+                        unfocusedBorderColor = LightBorder
+                    )
+                )
+
+                ExposedDropdownMenu(
+                    expanded = parishExpanded,
+                    onDismissRequest = { parishExpanded = false }
                 ) {
-                    Box(contentAlignment = Alignment.Center) {
-                        Icon(
-                            Icons.Default.Info,
-                            contentDescription = null,
-                            modifier = Modifier.size(18.dp),
-                            tint = Color.White
+                    FilterOptions.parishes.forEach { option ->
+                        DropdownMenuItem(
+                            text = { Text(option) },
+                            onClick = {
+                                parish = option
+                                parishExpanded = false
+                            }
                         )
                     }
                 }
-                Text(
-                    "Fill in family head details below",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = DeepRoyalBlue,
-                    fontWeight = FontWeight.Medium
-                )
             }
         }
 
-        // Family Head Section
-        SectionHeader(
-            title = "Family Head Information",
-            icon = Icons.Default.Person
-        )
-
-        FormTextField(
-            value = familyHead,
-            onValueChange = { familyHead = it },
-            label = "Family Head Name *",
-            icon = Icons.Default.Person,
-            required = true
-        )
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            FormTextField(
-                value = dob,
-                onValueChange = { dob = it },
-                label = "Date of Birth (YYYY-MM-DD)",
-                icon = Icons.Default.Cake,
-                modifier = Modifier.weight(1f)
-            )
-
-            FormDropdown(
-                value = gender,
-                onValueChange = { gender = it },
-                label = "Gender",
-                options = FilterOptions.genders,
-                icon = Icons.Default.Person,
-                modifier = Modifier.weight(1f)
-            )
-        }
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            FormTextField(
+        // Contact Information
+        SectionCard(title = "ബന്ധപ്പെടാൻ", subtitle = "Contact Information") {
+            OutlinedTextField(
                 value = phone,
                 onValueChange = { phone = it },
-                label = "Phone *",
-                icon = Icons.Default.Phone,
-                required = true,
-                modifier = Modifier.weight(1f)
+                label = { Text("ഫോൺ / Phone") },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                leadingIcon = { Icon(Icons.Default.Phone, null) },
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = DeepRoyalBlue,
+                    unfocusedBorderColor = LightBorder
+                )
             )
 
-            FormTextField(
+            Spacer(modifier = Modifier.height(12.dp))
+
+            OutlinedTextField(
                 value = email,
                 onValueChange = { email = it },
-                label = "Email",
-                icon = Icons.Default.Email,
-                modifier = Modifier.weight(1f)
+                label = { Text("ഇമെയിൽ / Email") },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                leadingIcon = { Icon(Icons.Default.Email, null) },
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = DeepRoyalBlue,
+                    unfocusedBorderColor = LightBorder
+                )
             )
         }
 
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            FormTextField(
+        // Personal Details
+        SectionCard(title = "വ്യക്തിഗത വിവരങ്ങൾ", subtitle = "Personal Details") {
+            OutlinedTextField(
+                value = dob,
+                onValueChange = { dob = it },
+                label = { Text("ജനനത്തീയതി / DOB (YYYY-MM-DD)") },
+                placeholder = { Text("1980-05-15") },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                leadingIcon = { Icon(Icons.Default.Cake, null) },
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = DeepRoyalBlue,
+                    unfocusedBorderColor = LightBorder
+                )
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            var genderExpanded by remember { mutableStateOf(false) }
+            ExposedDropdownMenuBox(
+                expanded = genderExpanded,
+                onExpandedChange = { genderExpanded = it }
+            ) {
+                OutlinedTextField(
+                    value = gender,
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text("ലിംഗം / Gender") },
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = genderExpanded) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .menuAnchor(),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = DeepRoyalBlue,
+                        unfocusedBorderColor = LightBorder
+                    )
+                )
+
+                ExposedDropdownMenu(
+                    expanded = genderExpanded,
+                    onDismissRequest = { genderExpanded = false }
+                ) {
+                    FilterOptions.genders.forEach { option ->
+                        DropdownMenuItem(
+                            text = { Text(option) },
+                            onClick = {
+                                gender = option
+                                genderExpanded = false
+                            }
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            var bloodGroupExpanded by remember { mutableStateOf(false) }
+            ExposedDropdownMenuBox(
+                expanded = bloodGroupExpanded,
+                onExpandedChange = { bloodGroupExpanded = it }
+            ) {
+                OutlinedTextField(
+                    value = bloodGroup,
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text("രക്തഗ്രൂപ്പ് / Blood Group") },
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = bloodGroupExpanded) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .menuAnchor(),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = DeepRoyalBlue,
+                        unfocusedBorderColor = LightBorder
+                    )
+                )
+
+                ExposedDropdownMenu(
+                    expanded = bloodGroupExpanded,
+                    onDismissRequest = { bloodGroupExpanded = false }
+                ) {
+                    FilterOptions.bloodGroups.forEach { option ->
+                        DropdownMenuItem(
+                            text = { Text(option) },
+                            onClick = {
+                                bloodGroup = option
+                                bloodGroupExpanded = false
+                            }
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            OutlinedTextField(
                 value = job,
                 onValueChange = { job = it },
-                label = "Occupation",
-                icon = Icons.Default.Work,
-                modifier = Modifier.weight(1f)
+                label = { Text("തൊഴിൽ / Occupation") },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                leadingIcon = { Icon(Icons.Default.Work, null) },
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = DeepRoyalBlue,
+                    unfocusedBorderColor = LightBorder
+                )
             )
 
-            FormTextField(
+            Spacer(modifier = Modifier.height(12.dp))
+
+            OutlinedTextField(
                 value = education,
                 onValueChange = { education = it },
-                label = "Education",
-                icon = Icons.Default.School,
-                modifier = Modifier.weight(1f)
+                label = { Text("വിദ്യാഭ്യാസം / Education") },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                leadingIcon = { Icon(Icons.Default.School, null) },
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = DeepRoyalBlue,
+                    unfocusedBorderColor = LightBorder
+                )
             )
         }
 
-        FormDropdown(
-            value = bloodGroup,
-            onValueChange = { bloodGroup = it },
-            label = "Blood Group",
-            options = FilterOptions.bloodGroups,
-            icon = Icons.Default.Favorite
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Location Section
-        SectionHeader(
-            title = "Location Details",
-            icon = Icons.Default.LocationOn
-        )
-
-        FormTextField(
-            value = place,
-            onValueChange = { place = it },
-            label = "Place *",
-            icon = Icons.Default.Home,
-            required = true
-        )
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            FormTextField(
-                value = postOffice,
-                onValueChange = { postOffice = it },
-                label = "Post Office",
-                icon = Icons.Default.LocationOn,
-                modifier = Modifier.weight(1f)
-            )
-
-            FormTextField(
-                value = region,
-                onValueChange = { region = it },
-                label = "Region",
-                icon = Icons.Default.Place,
-                modifier = Modifier.weight(1f)
+        // Other Information
+        SectionCard(title = "അധിക വിവരങ്ങൾ", subtitle = "Additional Information") {
+            OutlinedTextField(
+                value = otherInfo,
+                onValueChange = { otherInfo = it },
+                label = { Text("കുറിപ്പുകൾ / Notes") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(120.dp),
+                maxLines = 5,
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = DeepRoyalBlue,
+                    unfocusedBorderColor = LightBorder
+                )
             )
         }
-
-        FormDropdown(
-            value = parish,
-            onValueChange = { parish = it },
-            label = "Parish *",
-            options = FilterOptions.parishes,
-            icon = Icons.Default.Church,
-            required = true
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Additional Info Section
-        SectionHeader(
-            title = "Additional Information",
-            icon = Icons.Default.Description
-        )
-
-        FormTextField(
-            value = otherInfo,
-            onValueChange = { otherInfo = it },
-            label = "Other Information",
-            icon = Icons.Default.Notes,
-            singleLine = false,
-            maxLines = 5
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
 
         // Upload Button
         Button(
             onClick = {
-                viewModel.uploadFromForm(
+                viewModel.uploadFamilyFromForm(
                     familyHead = familyHead,
                     place = place,
                     postOffice = postOffice,
@@ -253,181 +335,115 @@ fun FormUploadContent(viewModel: AdminUploadViewModel) {
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp),
-            enabled = familyHead.isNotBlank() && place.isNotBlank() &&
-                    parish.isNotBlank() && phone.isNotBlank(),
+            enabled = familyHead.isNotBlank() && place.isNotBlank() && uploadStatus !is AdminUploadState.Uploading,
             colors = ButtonDefaults.buttonColors(
-                containerColor = DeepRoyalBlue,
-                disabledContainerColor = LightBorder
+                containerColor = HeritageGold,
+                contentColor = DeepRoyalBlue
             ),
-            shape = RoundedCornerShape(16.dp),
-            elevation = ButtonDefaults.buttonElevation(4.dp)
+            shape = RoundedCornerShape(16.dp)
         ) {
-            Icon(
-                Icons.Default.CloudUpload,
-                contentDescription = null,
-                modifier = Modifier.size(24.dp)
-            )
-            Spacer(modifier = Modifier.width(12.dp))
-            Text(
-                "Upload Family Data",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
-            )
+            Icon(Icons.Default.CloudUpload, null)
+            Spacer(modifier = Modifier.width(8.dp))
+            Text("അപ്‌ലോഡ് ചെയ്യുക", fontWeight = FontWeight.Bold)
         }
 
-        Spacer(modifier = Modifier.height(32.dp))
-    }
-}
-
-@Composable
-fun SectionHeader(
-    title: String,
-    icon: androidx.compose.ui.graphics.vector.ImageVector
-) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        modifier = Modifier.padding(vertical = 8.dp)
-    ) {
-        Surface(
-            shape = CircleShape,
-            color = SoftGray,
-            modifier = Modifier.size(36.dp)
-        ) {
-            Box(contentAlignment = Alignment.Center) {
-                Icon(
-                    imageVector = icon,
-                    contentDescription = null,
-                    modifier = Modifier.size(20.dp),
-                    tint = DeepRoyalBlue
-                )
-            }
-        }
-        Text(
-            text = title,
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold,
-            color = DeepRoyalBlue
-        )
-    }
-    HorizontalDivider(color = LightBorder)
-}
-
-@Composable
-fun FormTextField(
-    value: String,
-    onValueChange: (String) -> Unit,
-    label: String,
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
-    modifier: Modifier = Modifier,
-    required: Boolean = false,
-    singleLine: Boolean = true,
-    maxLines: Int = 1
-) {
-    OutlinedTextField(
-        value = value,
-        onValueChange = onValueChange,
-        label = {
-            Text(
-                if (required) "$label *" else label,
-                color = if (required) DeepRoyalBlue else TextSecondary
-            )
-        },
-        leadingIcon = {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = DeepRoyalBlue,
-                modifier = Modifier.size(20.dp)
-            )
-        },
-        modifier = modifier.fillMaxWidth(),
-        singleLine = singleLine,
-        maxLines = maxLines,
-        colors = OutlinedTextFieldDefaults.colors(
-            focusedBorderColor = DeepRoyalBlue,
-            unfocusedBorderColor = LightBorder,
-            focusedTextColor = TextDark,
-            unfocusedTextColor = TextDark
-        ),
-        shape = RoundedCornerShape(12.dp)
-    )
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun FormDropdown(
-    value: String,
-    onValueChange: (String) -> Unit,
-    label: String,
-    options: List<String>,
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
-    modifier: Modifier = Modifier,
-    required: Boolean = false
-) {
-    var expanded by remember { mutableStateOf(false) }
-
-    ExposedDropdownMenuBox(
-        expanded = expanded,
-        onExpandedChange = { expanded = it },
-        modifier = modifier
-    ) {
-        OutlinedTextField(
-            value = value.ifEmpty { "Select" },
-            onValueChange = {},
-            readOnly = true,
-            label = {
-                Text(
-                    if (required) "$label *" else label,
-                    color = if (required) DeepRoyalBlue else TextSecondary
-                )
-            },
-            leadingIcon = {
-                Icon(
-                    imageVector = icon,
-                    contentDescription = null,
-                    tint = DeepRoyalBlue,
-                    modifier = Modifier.size(20.dp)
-                )
-            },
-            trailingIcon = {
-                ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .menuAnchor(),
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = DeepRoyalBlue,
-                unfocusedBorderColor = LightBorder,
-                focusedTextColor = TextDark,
-                unfocusedTextColor = TextDark
-            ),
-            shape = RoundedCornerShape(12.dp)
-        )
-
-        ExposedDropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false },
-            modifier = Modifier.background(Color.White)
-        ) {
-            options.forEach { option ->
-                DropdownMenuItem(
-                    text = {
-                        Text(
-                            option,
-                            color = if (value == option) DeepRoyalBlue else TextDark,
-                            fontWeight = if (value == option) FontWeight.Bold else FontWeight.Normal
+        // Upload Status
+        when (uploadStatus) {
+            is AdminUploadState.Uploading -> {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = DeepRoyalBlue.copy(alpha = 0.1f)
+                    )
+                ) {
+                    Row(
+                        modifier = Modifier.padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(24.dp),
+                            color = DeepRoyalBlue,
+                            strokeWidth = 3.dp
                         )
-                    },
-                    onClick = {
-                        onValueChange(option)
-                        expanded = false
-                    },
-                    leadingIcon = if (value == option) {
-                        { Icon(Icons.Default.Check, null, tint = DeepRoyalBlue) }
-                    } else null
-                )
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Text("അപ്‌ലോഡ് ചെയ്യുന്നു...", color = DeepRoyalBlue)
+                    }
+                }
             }
+            is AdminUploadState.Success -> {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = SuccessGreen.copy(alpha = 0.1f)
+                    )
+                ) {
+                    Row(
+                        modifier = Modifier.padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(Icons.Default.CheckCircle, null, tint = SuccessGreen)
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Text("വിജയകരമായി അപ്‌ലോഡ് ചെയ്തു!", color = SuccessGreen)
+                    }
+                }
+            }
+            is AdminUploadState.Error -> {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = ErrorRed.copy(alpha = 0.1f)
+                    )
+                ) {
+                    Row(
+                        modifier = Modifier.padding(16.dp),
+                        verticalAlignment = Alignment.Top
+                    ) {
+                        Icon(Icons.Default.Error, null, tint = ErrorRed)
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Column {
+                            Text("അപ്‌ലോഡ് പരാജയപ്പെട്ടു", color = ErrorRed, fontWeight = FontWeight.Bold)
+                            Text(uploadStatus.message, color = ErrorRed, style = MaterialTheme.typography.bodySmall)
+                        }
+                    }
+                }
+            }
+            else -> {}
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+    }
+}
+
+@Composable
+fun SectionCard(
+    title: String,
+    subtitle: String,
+    content: @Composable ColumnScope.() -> Unit
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = PureWhite
+        ),
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(4.dp)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = DeepRoyalBlue
+            )
+            Text(
+                text = subtitle,
+                style = MaterialTheme.typography.bodySmall,
+                color = TextSecondary
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            content()
         }
     }
 }

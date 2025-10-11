@@ -1,18 +1,13 @@
 package com.example.familydirectory.ui.admin
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
+import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -24,26 +19,33 @@ fun AdminUploadScreen(
     onNavigateBack: () -> Unit,
     viewModel: AdminUploadViewModel = viewModel()
 ) {
-    val uiState by viewModel.uiState.collectAsState()
-
-    var selectedMode by remember { mutableStateOf(UploadMode.FORM) }
+    val selectedTab by viewModel.selectedTab.collectAsState()
+    val uploadStatus by viewModel.uploadStatus.collectAsState()
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(
-                        "Admin - Upload Family Data",
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White
-                    )
+                    Column {
+                        Text(
+                            "അഡ്മിൻ അപ്‌ലോഡ്",
+                            fontWeight = FontWeight.Bold,
+                            color = PureWhite,
+                            fontSize = MaterialTheme.typography.titleLarge.fontSize
+                        )
+                        Text(
+                            "Admin Upload",
+                            fontSize = MaterialTheme.typography.bodySmall.fontSize,
+                            color = PureWhite.copy(alpha = 0.9f)
+                        )
+                    }
                 },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(
                             Icons.Default.ArrowBack,
                             "Back",
-                            tint = Color.White
+                            tint = PureWhite
                         )
                     }
                 },
@@ -56,177 +58,75 @@ fun AdminUploadScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(SoftGray)
                 .padding(padding)
         ) {
-            // Mode Selector
-            Surface(
-                modifier = Modifier.fillMaxWidth(),
-                color = Color.White,
-                shadowElevation = 2.dp
+            // Tab Row
+            TabRow(
+                selectedTabIndex = selectedTab,
+                containerColor = PureWhite,
+                contentColor = DeepRoyalBlue,
+                indicator = { tabPositions ->
+                    TabRowDefaults.SecondaryIndicator(
+                        modifier = Modifier.tabIndicatorOffset(tabPositions[selectedTab]),
+                        color = HeritageGold,
+                        height = 3.dp
+                    )
+                }
             ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    FilterChip(
-                        selected = selectedMode == UploadMode.FORM,
-                        onClick = { selectedMode = UploadMode.FORM },
-                        label = { Text("Form Entry", fontWeight = FontWeight.Medium) },
-                        leadingIcon = {
+                Tab(
+                    selected = selectedTab == 0,
+                    onClick = { viewModel.selectTab(0) },
+                    text = {
+                        Column(horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally) {
                             Icon(
                                 Icons.Default.Edit,
                                 contentDescription = null,
-                                modifier = Modifier.size(18.dp)
+                                modifier = Modifier.size(20.dp)
                             )
-                        },
-                        colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = DeepRoyalBlue,
-                            selectedLabelColor = Color.White,
-                            selectedLeadingIconColor = Color.White
-                        ),
-                        modifier = Modifier.weight(1f)
-                    )
-
-                    FilterChip(
-                        selected = selectedMode == UploadMode.JSON,
-                        onClick = { selectedMode = UploadMode.JSON },
-                        label = { Text("JSON Upload", fontWeight = FontWeight.Medium) },
-                        leadingIcon = {
-                            Icon(
-                                Icons.Default.DataObject,
-                                contentDescription = null,
-                                modifier = Modifier.size(18.dp)
-                            )
-                        },
-                        colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = DeepRoyalBlue,
-                            selectedLabelColor = Color.White,
-                            selectedLeadingIconColor = Color.White
-                        ),
-                        modifier = Modifier.weight(1f)
-                    )
-                }
-            }
-
-            // Content
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .weight(1f)
-            ) {
-                when (selectedMode) {
-                    UploadMode.FORM -> FormUploadContent(viewModel)
-                    UploadMode.JSON -> JsonUploadContent(viewModel)
-                }
-
-                // Loading/Success/Error Overlay
-                when (val state = uiState) {
-                    is AdminUploadUiState.Uploading -> {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .background(Color.Black.copy(alpha = 0.5f)),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Card(
-                                colors = CardDefaults.cardColors(
-                                    containerColor = Color.White
-                                ),
-                                shape = RoundedCornerShape(20.dp)
-                            ) {
-                                Column(
-                                    modifier = Modifier.padding(32.dp),
-                                    horizontalAlignment = Alignment.CenterHorizontally
-                                ) {
-                                    CircularProgressIndicator(
-                                        color = DeepRoyalBlue,
-                                        strokeWidth = 3.dp
-                                    )
-                                    Spacer(modifier = Modifier.height(16.dp))
-                                    Text(
-                                        "Uploading family data...",
-                                        style = MaterialTheme.typography.bodyLarge,
-                                        fontWeight = FontWeight.Medium,
-                                        color = TextDark
-                                    )
-                                }
-                            }
-                        }
-                    }
-                    is AdminUploadUiState.Success -> {
-                        LaunchedEffect(Unit) {
-                            kotlinx.coroutines.delay(2000)
-                            viewModel.resetState()
-                        }
-                    }
-                    else -> {}
-                }
-            }
-
-            // Status Messages
-            when (val state = uiState) {
-                is AdminUploadUiState.Success -> {
-                    Surface(
-                        modifier = Modifier.fillMaxWidth(),
-                        color = SuccessGreen.copy(alpha = 0.1f)
-                    ) {
-                        Row(
-                            modifier = Modifier.padding(16.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(12.dp)
-                        ) {
-                            Icon(
-                                Icons.Default.CheckCircle,
-                                contentDescription = null,
-                                tint = SuccessGreen
-                            )
+                            Spacer(modifier = Modifier.height(4.dp))
                             Text(
-                                "Family data uploaded successfully!",
-                                color = SuccessGreen,
-                                fontWeight = FontWeight.Medium
+                                "ഫോം / Form",
+                                fontWeight = if (selectedTab == 0) FontWeight.Bold else FontWeight.Normal
                             )
                         }
-                    }
-                }
-                is AdminUploadUiState.Error -> {
-                    Surface(
-                        modifier = Modifier.fillMaxWidth(),
-                        color = ErrorRed.copy(alpha = 0.1f)
-                    ) {
-                        Row(
-                            modifier = Modifier.padding(16.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(12.dp)
-                        ) {
+                    },
+                    selectedContentColor = DeepRoyalBlue,
+                    unselectedContentColor = TextSecondary
+                )
+
+                Tab(
+                    selected = selectedTab == 1,
+                    onClick = { viewModel.selectTab(1) },
+                    text = {
+                        Column(horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally) {
                             Icon(
-                                Icons.Default.Error,
+                                Icons.Default.Code,
                                 contentDescription = null,
-                                tint = ErrorRed
+                                modifier = Modifier.size(20.dp)
                             )
-                            Column {
-                                Text(
-                                    "Upload failed",
-                                    color = ErrorRed,
-                                    fontWeight = FontWeight.Bold
-                                )
-                                Text(
-                                    state.message,
-                                    color = ErrorRed,
-                                    style = MaterialTheme.typography.bodySmall
-                                )
-                            }
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                "JSON",
+                                fontWeight = if (selectedTab == 1) FontWeight.Bold else FontWeight.Normal
+                            )
                         }
-                    }
-                }
-                else -> {}
+                    },
+                    selectedContentColor = DeepRoyalBlue,
+                    unselectedContentColor = TextSecondary
+                )
+            }
+
+            // Content based on selected tab
+            when (selectedTab) {
+                0 -> FormUploadContent(
+                    viewModel = viewModel,
+                    uploadStatus = uploadStatus
+                )
+                1 -> JsonUploadContent(
+                    viewModel = viewModel,
+                    uploadStatus = uploadStatus
+                )
             }
         }
     }
-}
-
-enum class UploadMode {
-    FORM, JSON
 }
