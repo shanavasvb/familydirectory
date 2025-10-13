@@ -763,8 +763,6 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 ### Made with ❤️ for the Malikudy Community
 
-**If this project helps you, please consider giving it a ⭐!**
-
-[⬆ Back to Top](#-മാളികുടി-കുടുംബയോഗം--malikudy-kudumbayogam-family-directory)
+**If this project helps you, please consider giving it a 🌟
 
 </div>
