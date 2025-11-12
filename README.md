@@ -724,7 +724,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 **Developer**: Shanavasvb
 
 - GitHub: [@shanavasvb](https://github.com/shanavasvb)
-- Email: shanavasvb@example.com
+- Email: shanavasvbasheer@gmail.com
 - Project Link: [https://github.com/shanavasvb/familydirectory](https://github.com/shanavasvb/familydirectory)
 
 ---
