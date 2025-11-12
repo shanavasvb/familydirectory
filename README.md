@@ -136,11 +136,11 @@ The app serves families across:
 
 | 🏠 Splash / First Page | 💬 Daily Quotes | 🔍 Search | 🧩 Filters |
 |:---:|:---:|:---:|:---:|
-| ![First Page](screenshots/firstpage.jpeg) | ![Daily Quotes](screenshots/dailyquotes.jpeg) | ![Search](screenshots/search.jpeg) | ![Filters](screenshots/filters.jpeg) |
+| ![First Page](screenshots/firstpage.jpg) | ![Daily Quotes](screenshots/dailyquotes.jpg) | ![Search](screenshots/search.jpg) | ![Filters](screenshots/filters.jpg) |
 
 | 👨‍👩‍👧‍👦 Admin Panel | ➕ Add Family | 📸 Upload Event | ⚙️ Admin Form |
 |:---:|:---:|:---:|:---:|
-| ![Admin](screenshots/admin.jpeg) | ![Add Family](screenshots/add.jpeg) | ![Upload Event](screenshots/upload.jpeg) | ![Form](screenshots/form.jpeg) |
+| ![Admin](screenshots/admin.jpg) | ![Add Family](screenshots/add.jpg) | ![Upload Event](screenshots/upload.jpg) | ![Form](screenshots/form.jpg) |
 
 </div>
 
