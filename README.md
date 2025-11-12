@@ -138,7 +138,7 @@ The app serves families across:
 |:---:|:---:|:---:|:---:|
 | ![First Page](screenshots/firstpage.jpg) | ![Daily Quotes](screenshots/dailyquotes.jpg) | ![Search](screenshots/search.jpg) | ![Filters](screenshots/filters.jpg) |
 
-| 👨‍👩‍👧‍👦 Admin Panel | ➕ Add Family | 📸 Upload Event | ⚙️ Admin Form |
+| 👨‍👩‍👧‍👦 Admin Panel | ➕ Add Family | 
 |:---:|:---:|:---:|:---:|
 | ![Admin](screenshots/admin.jpg) | ![Add Family](screenshots/add.jpg) | 
 
