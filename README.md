@@ -130,22 +130,21 @@ The app serves families across:
 
 ---
 
-## 📱 Screenshots
+## 📱 Screenshots  
 
 <div align="center">
 
-| Search Screen | Family Details | Filters | Events |
+| 🏠 Splash / First Page | 💬 Daily Quotes | 🔍 Search | 🧩 Filters |
 |:---:|:---:|:---:|:---:|
-| ![Search](screenshots/search.png) | ![Details](screenshots/details.png) | ![Filters](screenshots/filters.png) | ![Events](screenshots/events.png) |
+| ![First Page](screenshots/firstpage.jpeg) | ![Daily Quotes](screenshots/dailyquotes.jpeg) | ![Search](screenshots/search.jpeg) | ![Filters](screenshots/filters.jpeg) |
 
-| Admin Login | Add Family | Upload Event | Form Input |
+| 👨‍👩‍👧‍👦 Admin Panel | ➕ Add Family | 📸 Upload Event | ⚙️ Admin Form |
 |:---:|:---:|:---:|:---:|
-| ![Admin](screenshots/admin.png) | ![Add](screenshots/add.png) | ![Upload](screenshots/upload.png) | ![Form](screenshots/form.png) |
+| ![Admin](screenshots/admin.jpeg) | ![Add Family](screenshots/add.jpeg) | ![Upload Event](screenshots/upload.jpeg) | ![Form](screenshots/form.jpeg) |
 
 </div>
 
 ---
-
 ## 🛠️ Technology Stack
 
 ### Frontend
