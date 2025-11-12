@@ -140,7 +140,7 @@ The app serves families across:
 
 | 👨‍👩‍👧‍👦 Admin Panel | ➕ Add Family | 📸 Upload Event | ⚙️ Admin Form |
 |:---:|:---:|:---:|:---:|
-| ![Admin](screenshots/admin.jpg) | ![Add Family](screenshots/add.jpg) | ![Upload Event](screenshots/upload.jpg) | ![Form](screenshots/form.jpg) |
+| ![Admin](screenshots/admin.jpg) | ![Add Family](screenshots/add.jpg) | 
 
 </div>
 
